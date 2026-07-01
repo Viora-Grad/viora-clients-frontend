@@ -6,7 +6,7 @@ export const tenantGuard: CanActivateFn = (): boolean => {
 	const store = inject(TenantStore);
 
 	if (store.error()) {
-		// window.location.href = 'https://www.google.com';
+		window.location.href = 'http://localhost:4200/';
 		return false;
 	}
 

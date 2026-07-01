@@ -4,7 +4,22 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface OrganizationResponse {
-	organizationId: string;
+	id: string;
+	name: string;
+	about: string;
+	country: string;
+	countryCode: string;
+	servicesProvided: string[];
+	serviceDescription: string;
+	contactEmail: string;
+	joinedOnUtc: string;
+	branches: {
+		id: string;
+		imageId: string | null;
+		address: string;
+		openedSinceUtc: string;
+	}[];
+	subDomain: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -12,6 +27,8 @@ export class TenantApi {
 	private readonly _http = inject(HttpClient);
 
 	public resolveOrganization(slug: string): Observable<OrganizationResponse> {
-		return this._http.get<OrganizationResponse>(`${environment.apiBaseUrl}/tenants/${slug}`);
+		return this._http.get<OrganizationResponse>(
+			`${environment.apiBaseUrl}/Organizations/subdomain/${slug}`,
+		);
 	}
 }
