@@ -1,0 +1,10 @@
+services:
+  viora.clients.frontend:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    ports:
+      - '80:80'
+    restart: unless-stopped

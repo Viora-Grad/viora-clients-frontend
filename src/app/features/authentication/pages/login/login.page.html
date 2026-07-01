@@ -1,0 +1,104 @@
+<p-toast />
+<div class="min-h-screen flex items-center justify-center p-4 bg-gray-50/50">
+	<div
+		class="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-[0_2px_40px_rgba(0,0,0,0.04)] border border-gray-100"
+	>
+		<!-- Header -->
+		<div class="text-center mb-8">
+			<h1 class="text-[32px] font-extrabold text-[#201335] tracking-tight mb-2">Welcome Back</h1>
+			<p class="text-gray-500 font-medium text-[15px]">
+				Please enter your account credentials to proceed.
+			</p>
+		</div>
+
+		<!-- Form -->
+		<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+			<!-- Username Input -->
+			<div class="space-y-1.5">
+				<label
+					class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+					for="username-input"
+					>USERNAME</label
+				>
+				<p-iconfield class="w-full relative block">
+					<p-inputicon class="pi pi-user" />
+					<input
+						id="username-input"
+						type="text"
+						pInputText
+						formControlName="username"
+						placeholder="e.g. dr.smith"
+						class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3.5 pl-11 pr-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+					/>
+				</p-iconfield>
+				@if (form.controls.username.touched && form.controls.username.invalid) {
+					<p class="text-[12px] text-red-500 font-medium mt-1">Username is required.</p>
+				}
+			</div>
+
+			<!-- Password Input -->
+			<div class="space-y-1.5 pt-1">
+				<div class="flex justify-between items-center">
+					<label
+						class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+						for="password-input"
+						>PASSWORD</label
+					>
+					<a
+						routerLink=""
+						class="text-[12px] font-bold text-gray-500 hover:text-[#201335] transition-colors"
+						>Forgot Password?</a
+					>
+				</div>
+				<p-iconfield class="w-full relative block">
+					<p-inputicon class="pi pi-lock" />
+					<p-password
+						id="password-input"
+						formControlName="password"
+						name="password"
+						[toggleMask]="true"
+						[feedback]="false"
+						class="w-full"
+						inputStyleClass="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3.5 pl-11 pr-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+					/>
+				</p-iconfield>
+				@if (form.controls.password.touched && form.controls.password.invalid) {
+					<p class="text-[12px] text-red-500 font-medium mt-1">Password is required.</p>
+				}
+			</div>
+
+			<!-- Checkbox -->
+			<div class="flex items-center pt-2 pb-4">
+				<p-checkbox
+					[binary]="true"
+					formControlName="rememberMe"
+					id="checkbox-input"
+					name="remember"
+				/>
+				<label
+					class="ml-3 text-[14px] font-medium text-gray-500 cursor-pointer select-none"
+					for="checkbox-input"
+				>
+					Remember me
+				</label>
+			</div>
+
+			<!-- Error -->
+			@if (authStore.error()) {
+				<p class="text-[13px] text-red-500 font-medium text-center">{{ authStore.error() }}</p>
+			}
+
+			<!-- Submit Button -->
+			<p-button
+				type="submit"
+				label="Sign In to Viora"
+				[size]="'large'"
+				[rounded]="false"
+				[raised]="true"
+				[loading]="authStore.isLoading()"
+				[disabled]="form.invalid || authStore.isLoading()"
+				styleClass="w-full !bg-primary !border-primary hover:!bg-primary-700"
+			/>
+		</form>
+	</div>
+</div>
