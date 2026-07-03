@@ -112,23 +112,23 @@
 				<div
 					class="flex items-center justify-center w-9 h-9 rounded-full shrink-0"
 					[class.bg-emerald-500/20]="currentBranchId() === branch.id"
-					[class.bg-white/5]="currentBranchId() !== branch.id"
+					[class.bg-black/5]="currentBranchId() !== branch.id"
 				>
 					<i
 						class="pi pi-map-marker text-sm"
 						[class.text-emerald-500]="currentBranchId() === branch.id"
-						[class.text-white/40]="currentBranchId() !== branch.id"
+						[class.text-black/40]="currentBranchId() !== branch.id"
 					></i>
 				</div>
 				<div class="flex flex-col min-w-0 flex-1">
-					<span class="text-sm font-semibold text-white truncate">{{ branch.address }}</span>
+					<span class="text-sm font-semibold truncate">{{ branch.address }}</span>
 					<div class="flex items-center gap-1.5">
 						<span
 							class="w-1.5 h-1.5 rounded-full shrink-0"
 							[class.bg-emerald-500]="branch.isOpen"
 							[class.bg-red-500]="!branch.isOpen"
 						></span>
-						<span class="text-[10px] text-white/40 uppercase tracking-wider">
+						<span class="text-[10px] uppercase tracking-wider">
 							{{ branch.isOpen ? 'Open' : 'Closed' }}
 						</span>
 					</div>

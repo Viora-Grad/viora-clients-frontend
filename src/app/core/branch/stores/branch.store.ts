@@ -17,6 +17,12 @@ interface BranchState {
 	currentBranchId: string | null;
 	isLoading: boolean;
 	error: string | null;
+	currentPage: number;
+	pageSize: number;
+	totalCount: number;
+	totalPages: number;
+	hasNextPage: boolean;
+	hasPreviousPage: boolean;
 }
 
 const initialState: BranchState = {
@@ -24,6 +30,12 @@ const initialState: BranchState = {
 	currentBranchId: null,
 	isLoading: false,
 	error: null,
+	currentPage: 1,
+	pageSize: 10,
+	totalCount: 0,
+	totalPages: 0,
+	hasNextPage: false,
+	hasPreviousPage: false,
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -50,6 +62,31 @@ export const BranchStore = signalStore(
 					const response = await firstValueFrom(branchApi.getBranches(organizationId));
 					const branches = response.items.map(mapApiResponseToBranch);
 					patchState(store, { branches, isLoading: false });
+				} catch {
+					patchState(store, { error: 'Failed to load branches', isLoading: false });
+				}
+			},
+			async loadBranchesPaginated(
+				organizationId: string,
+				page: number,
+				pageSize: number,
+			): Promise<void> {
+				patchState(store, { isLoading: true, error: null });
+				try {
+					const response = await firstValueFrom(
+						branchApi.getBranches(organizationId, page, pageSize),
+					);
+					const branches = response.items.map(mapApiResponseToBranch);
+					patchState(store, {
+						branches,
+						isLoading: false,
+						currentPage: Number(response.page),
+						pageSize: Number(response.pageSize),
+						totalCount: Number(response.totalCount),
+						totalPages: Number(response.totalPages),
+						hasNextPage: response.hasNextPage,
+						hasPreviousPage: response.hasPreviousPage,
+					});
 				} catch {
 					patchState(store, { error: 'Failed to load branches', isLoading: false });
 				}

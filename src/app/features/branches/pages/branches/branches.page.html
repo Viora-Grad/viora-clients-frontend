@@ -1,0 +1,114 @@
+<div class="flex flex-col h-full">
+	<!-- Top Navbar -->
+	<div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white shrink-0">
+		<h1 class="text-xl font-bold text-gray-900">Branches</h1>
+		<p-button
+			label="Add Branch"
+			icon="pi pi-plus"
+			[rounded]="true"
+			[raised]="true"
+			styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+		/>
+	</div>
+
+	<!-- Table Content -->
+	<div class="flex-1 overflow-auto bg-white">
+		<p-table
+			[value]="branchStore.branches()"
+			[loading]="branchStore.isLoading()"
+			[tableStyle]="{ 'min-width': '60rem' }"
+			[rows]="branchStore.pageSize()"
+			[showGridlines]="true"
+			[stripedRows]="true"
+			styleClass="p-datatable-sm"
+		>
+			<ng-template #header>
+				<tr>
+					<th class="!text-xs !font-bold !text-gray-500 !uppercase !tracking-wider">Branch Name</th>
+					<th class="!text-xs !font-bold !text-gray-500 !uppercase !tracking-wider">Location</th>
+					<th class="!text-xs !font-bold !text-gray-500 !uppercase !tracking-wider">Status</th>
+					<th class="!text-xs !font-bold !text-gray-500 !uppercase !tracking-wider">Open Since</th>
+				</tr>
+			</ng-template>
+			<ng-template #body let-branch>
+				<tr>
+					<td>
+						<div class="flex items-center gap-3">
+							<div class="flex items-center justify-center w-9 h-9 rounded-full bg-purple-100 shrink-0">
+								<i class="pi pi-map-marker text-purple-600 text-sm"></i>
+							</div>
+							<div class="flex flex-col">
+								<span class="text-sm font-semibold text-gray-900">{{ branch.address }}</span>
+								<span class="text-xs text-gray-400">{{ branch.organizationName }}</span>
+							</div>
+						</div>
+					</td>
+					<td class="text-sm text-gray-600">{{ branch.address }}</td>
+					<td>
+						<p-tag
+							[value]="branch.isOpen ? 'ACTIVE' : 'INACTIVE'"
+							[severity]="branch.isOpen ? 'success' : 'danger'"
+							[rounded]="true"
+							styleClass="!text-xs !font-bold"
+						/>
+					</td>
+					<td class="text-sm text-gray-600">{{ branch.openedSince | date:'mediumDate' }}</td>
+				</tr>
+			</ng-template>
+			<ng-template #emptymessage>
+				<tr>
+					<td colspan="4" class="!text-center !py-10">
+						<div class="flex flex-col items-center gap-2">
+							<i class="pi pi-building text-gray-300 text-3xl"></i>
+							<span class="text-sm text-gray-500">No branches found</span>
+						</div>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+
+	<!-- Paginator -->
+	<div class="flex items-center justify-between px-6 py-3 border-t border-gray-200 bg-white shrink-0">
+		<span class="text-sm text-gray-500">
+			Showing {{ firstItemIndex() }} to {{ lastItemIndex() }} of {{ branchStore.totalCount() }} branches
+		</span>
+		<div class="flex items-center gap-1">
+			<button
+				type="button"
+				class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors"
+				[class.pointer-events-none]="!branchStore.hasPreviousPage()"
+				[class.text-gray-300]="!branchStore.hasPreviousPage()"
+				[class.text-gray-700]="branchStore.hasPreviousPage()"
+				[class.hover:bg-gray-100]="branchStore.hasPreviousPage()"
+				(click)="onPageChange(branchStore.currentPage() - 1)"
+			>
+				<i class="pi pi-chevron-left text-xs"></i>
+			</button>
+			@for (p of visiblePages(); track p) {
+				<button
+					type="button"
+					class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors"
+					[class.bg-primary]="p === branchStore.currentPage()"
+					[class.text-white]="p === branchStore.currentPage()"
+					[class.hover:bg-gray-100]="p !== branchStore.currentPage()"
+					[class.text-gray-700]="p !== branchStore.currentPage()"
+					(click)="onPageChange(p)"
+				>
+					{{ p }}
+				</button>
+			}
+			<button
+				type="button"
+				class="w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors"
+				[class.pointer-events-none]="!branchStore.hasNextPage()"
+				[class.text-gray-300]="!branchStore.hasNextPage()"
+				[class.text-gray-700]="branchStore.hasNextPage()"
+				[class.hover:bg-gray-100]="branchStore.hasNextPage()"
+				(click)="onPageChange(branchStore.currentPage() + 1)"
+			>
+				<i class="pi pi-chevron-right text-xs"></i>
+			</button>
+		</div>
+	</div>
+</div>

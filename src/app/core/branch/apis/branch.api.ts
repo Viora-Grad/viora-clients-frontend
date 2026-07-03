@@ -8,9 +8,13 @@ import { BranchListResponse } from '../dtos/branch.dto';
 export class BranchApi {
 	private readonly _http = inject(HttpClient);
 
-	public getBranches(organizationId: string): Observable<BranchListResponse> {
+	public getBranches(
+		organizationId: string,
+		page = 1,
+		pageSize = 10,
+	): Observable<BranchListResponse> {
 		return this._http.get<BranchListResponse>(`${environment.apiBaseUrl}/Branches`, {
-			params: { organizationId },
+			params: { organizationId, page: page.toString(), pageSize: pageSize.toString() },
 		});
 	}
 }

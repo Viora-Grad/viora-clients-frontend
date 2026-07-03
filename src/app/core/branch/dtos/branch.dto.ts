@@ -25,6 +25,15 @@ export interface BranchApiResponse {
 
 export interface BranchListResponse {
 	items: BranchApiResponse[];
+	page: string;
+	pageSize: string;
+	totalCount: string;
+	count: string;
+	totalPages: string;
+	hasNextPage: boolean;
+	hasPreviousPage: boolean;
+	nextPage: string | null;
+	previousPage: string | null;
 }
 
 export function mapApiResponseToBranch(apiBranch: BranchApiResponse): Branch {
