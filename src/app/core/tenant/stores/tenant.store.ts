@@ -34,7 +34,6 @@ export const TenantStore = signalStore(
 				try {
 					const response = await firstValueFrom(tenantService.resolveOrganization(slug));
 					patchState(store, {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						organizationId: response.id,
 						loaded: true,
 					});

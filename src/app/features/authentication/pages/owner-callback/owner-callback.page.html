@@ -1,0 +1,13 @@
+<div class="flex min-h-screen items-center justify-center bg-gray-50/50">
+	<div class="text-center">
+		@if (isLoading()) {
+			<i class="pi pi-spin pi-spinner text-4xl text-[#201335]"></i>
+			<p class="mt-4 text-sm text-gray-500">Authenticating...</p>
+		} @else if (error()) {
+			<p class="text-sm text-red-500">{{ error() }}</p>
+			<a routerLink="/" class="mt-4 inline-block text-sm font-medium text-[#201335] hover:underline">
+				Go back
+			</a>
+		}
+	</div>
+</div>

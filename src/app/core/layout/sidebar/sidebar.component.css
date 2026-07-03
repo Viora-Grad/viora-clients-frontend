@@ -1,0 +1,76 @@
+.sidebar-bg {
+	background-color: var(--p-primary-color);
+	width: clamp(13rem, 18vw, 16rem);
+}
+
+.text-contrast {
+	color: var(--p-primary-contrast-color);
+}
+
+.nav-item:hover {
+	background-color: rgba(255, 255, 255, 0.08);
+}
+
+.active-nav-item {
+	background-color: rgba(255, 255, 255, 0.12) !important;
+	font-weight: 600;
+}
+
+.managing-indicator {
+	background: #2d6a65;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.managing-card {
+	background: linear-gradient(180deg, rgba(58, 41, 97, 0.98) 0%, rgba(52, 36, 88, 0.98) 100%);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	box-shadow:
+		0 12px 24px rgba(0, 0, 0, 0.12),
+		inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+	width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	background-color: rgba(255, 255, 255, 0.15);
+	border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.user-card {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-card:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.user-avatar {
+	background: rgba(255, 255, 255, 0.1);
+	color: var(--p-primary-contrast-color);
+}
+
+.branch-option {
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.branch-option:hover {
+	background: rgba(255, 255, 255, 0.06);
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+.branch-option-active {
+	background: rgba(255, 255, 255, 0.08) !important;
+	border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+:host ::ng-deep .branch-dialog {
+	width: 28rem;
+}

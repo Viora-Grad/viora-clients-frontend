@@ -1,0 +1,142 @@
+<aside class="sidebar-bg flex flex-col h-screen shrink-0 overflow-hidden sidebar-width">
+	<!-- Logo -->
+	<div class="flex items-center px-5 h-[72px] shrink-0">
+		<span class="text-sm font-bold text-contrast tracking-wide uppercase">Viora</span>
+	</div>
+
+	<!-- Navigation items -->
+	<nav class="flex-1 overflow-y-auto px-3 py-2 space-y-1 custom-scrollbar">
+		@for (item of items(); track item.route) {
+			<a
+				[routerLink]="item.route"
+				routerLinkActive="active-nav-item"
+				[routerLinkActiveOptions]="{ exact: item.route === '/' }"
+				class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-150 no-underline text-contrast"
+			>
+				<i [class]="item.icon + ' text-base shrink-0'"></i>
+				<span class="text-sm font-medium truncate">{{ item.label }}</span>
+			</a>
+		}
+	</nav>
+
+	<!-- User Section -->
+	<div class="px-3 pb-2">
+		<button
+			type="button"
+			class="user-card w-full flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors duration-150"
+		>
+			<div class="user-avatar flex items-center justify-center w-9 h-9 rounded-full shrink-0">
+				<span class="text-sm font-bold">{{ userInitials() }}</span>
+			</div>
+			<div class="flex flex-col min-w-0 text-left">
+				<span class="text-sm font-semibold text-white truncate">{{ userName() }}</span>
+				<span class="text-[10px] text-white/40 uppercase tracking-wider">{{ userRole() }}</span>
+			</div>
+		</button>
+	</div>
+
+	<!-- Divider -->
+	<div class="px-5 pb-2">
+		<div class="border-t border-white/10"></div>
+	</div>
+
+	<!-- Currently Managing -->
+	<div class="px-3 pb-4">
+		<button
+			type="button"
+			(click)="openBranchModal()"
+			class="user-card w-full flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors duration-150"
+		>
+			<div class="bg-emerald-500/20 p-2 rounded-full">
+				<i class="pi pi-globe text-emerald-500"></i>
+			</div>
+			<div class="flex flex-col min-w-0 text-left flex-1">
+				<p class="text-[10px] uppercase tracking-wider text-white/40 font-bold">
+					Currently managing:
+				</p>
+				<p class="text-xs font-semibold text-white uppercase truncate">
+					{{ currentManagingLabel() }}
+				</p>
+			</div>
+		</button>
+	</div>
+</aside>
+
+<!-- Branch Selection Dialog -->
+<p-dialog
+	[(visible)]="branchModalVisible"
+	header="Switch Branch"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="branch-dialog"
+>
+	<div class="flex flex-col gap-1">
+		<!-- Organization option (only for non-staff) -->
+		@if (!isStaff()) {
+			<button
+				type="button"
+				(click)="selectBranch(null)"
+				class="branch-option flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors duration-150 w-full text-left"
+				[class.branch-option-active]="isOrganizationLevel()"
+			>
+				<div
+					class="flex items-center justify-center w-9 h-9 rounded-full shrink-0"
+					[class.bg-emerald-500/20]="isOrganizationLevel()"
+					[class.bg-white/5]="!isOrganizationLevel()"
+				>
+					<i
+						class="pi pi-sitemap text-sm"
+						[class.text-emerald-500]="isOrganizationLevel()"
+						[class.text-white/40]="!isOrganizationLevel()"
+					></i>
+				</div>
+				<div class="flex flex-col min-w-0 flex-1">
+					<span class="text-sm font-semibold">Organization</span>
+					<span class="text-[10px] uppercase tracking-wider">Manage on the organization level</span>
+				</div>
+				@if (isOrganizationLevel()) {
+					<i class="pi pi-check text-emerald-500 text-sm shrink-0"></i>
+				}
+			</button>
+		}
+
+		<!-- Branch list -->
+		@for (branch of branches(); track branch.id) {
+			<button
+				type="button"
+				(click)="selectBranch(branch.id)"
+				class="branch-option flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-colors duration-150 w-full text-left"
+				[class.branch-option-active]="currentBranchId() === branch.id"
+			>
+				<div
+					class="flex items-center justify-center w-9 h-9 rounded-full shrink-0"
+					[class.bg-emerald-500/20]="currentBranchId() === branch.id"
+					[class.bg-white/5]="currentBranchId() !== branch.id"
+				>
+					<i
+						class="pi pi-map-marker text-sm"
+						[class.text-emerald-500]="currentBranchId() === branch.id"
+						[class.text-white/40]="currentBranchId() !== branch.id"
+					></i>
+				</div>
+				<div class="flex flex-col min-w-0 flex-1">
+					<span class="text-sm font-semibold text-white truncate">{{ branch.address }}</span>
+					<div class="flex items-center gap-1.5">
+						<span
+							class="w-1.5 h-1.5 rounded-full shrink-0"
+							[class.bg-emerald-500]="branch.isOpen"
+							[class.bg-red-500]="!branch.isOpen"
+						></span>
+						<span class="text-[10px] text-white/40 uppercase tracking-wider">
+							{{ branch.isOpen ? 'Open' : 'Closed' }}
+						</span>
+					</div>
+				</div>
+				@if (currentBranchId() === branch.id) {
+					<i class="pi pi-check text-emerald-500 text-sm shrink-0"></i>
+				}
+			</button>
+		}
+	</div>
+</p-dialog>

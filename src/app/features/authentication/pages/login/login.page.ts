@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/services/auth.service';
 import { AuthStore } from '../../../../core/auth/stores/auth.store';
 import { Toast } from 'primeng/toast';
@@ -31,6 +31,7 @@ import { Button } from 'primeng/button';
 export class LoginPage {
 	private readonly _formBuilder = inject(NonNullableFormBuilder);
 	private readonly _authService = inject(AuthService);
+	private readonly _router = inject(Router);
 	protected readonly authStore = inject(AuthStore);
 
 	protected readonly form = this._formBuilder.group({
@@ -45,7 +46,9 @@ export class LoginPage {
 		const { username, password, rememberMe } = this.form.getRawValue();
 		const success = await this._authService.login(username, password, rememberMe);
 
-		if (!success) {
+		if (success) {
+			await this._router.navigate(['/']);
+		} else {
 			this.form.controls.password.reset();
 		}
 	}

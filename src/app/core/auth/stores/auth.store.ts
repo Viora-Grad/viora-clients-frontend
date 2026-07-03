@@ -12,11 +12,13 @@ import { AuthDetails } from '../models/auth-details.model';
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const REMEMBER_ME_KEY = 'remember_me';
+const IS_STAFF_KEY = 'is_staff';
 
 interface AuthState {
 	currentUser: AuthDetails | null;
 	accessToken: string | null;
 	refreshToken: string | null;
+	isStaff: boolean | null;
 	isLoading: boolean;
 	error: string | null;
 	initialized: boolean;
@@ -26,6 +28,7 @@ const initialState: AuthState = {
 	currentUser: null,
 	accessToken: null,
 	refreshToken: null,
+	isStaff: null,
 	isLoading: false,
 	error: null,
 	initialized: false,
@@ -58,11 +61,13 @@ export const AuthStore = signalStore(
 				const storage = getStorage(rememberMe);
 				storage.setItem(ACCESS_TOKEN_KEY, accessToken);
 				storage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+				storage.setItem(IS_STAFF_KEY, String(user.isStaff));
 				localStorage.setItem(REMEMBER_ME_KEY, String(rememberMe));
 				patchState(store, {
 					currentUser: user,
 					accessToken,
 					refreshToken,
+					isStaff: user.isStaff,
 					error: null,
 					isLoading: false,
 				});
@@ -88,8 +93,10 @@ export const AuthStore = signalStore(
 			logout(): void {
 				localStorage.removeItem(ACCESS_TOKEN_KEY);
 				localStorage.removeItem(REFRESH_TOKEN_KEY);
+				localStorage.removeItem(IS_STAFF_KEY);
 				sessionStorage.removeItem(ACCESS_TOKEN_KEY);
 				sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+				sessionStorage.removeItem(IS_STAFF_KEY);
 				localStorage.removeItem(REMEMBER_ME_KEY);
 				patchState(store, initialState);
 			},
@@ -102,8 +109,10 @@ export const AuthStore = signalStore(
 			const storage = rememberMe ? localStorage : sessionStorage;
 			const accessToken = storage.getItem(ACCESS_TOKEN_KEY);
 			const refreshToken = storage.getItem(REFRESH_TOKEN_KEY);
+			const isStaffValue = storage.getItem(IS_STAFF_KEY);
+			const isStaff = isStaffValue === 'true';
 			if (accessToken && refreshToken) {
-				patchState(store, { accessToken, refreshToken });
+				patchState(store, { accessToken, refreshToken, isStaff });
 			}
 			patchState(store, { initialized: true });
 		},
