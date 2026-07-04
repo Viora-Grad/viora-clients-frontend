@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { TenantStore } from '../../tenant/stores/tenant.store';
 import { AuthApi } from '../apis/auth.api';
 import { AuthStore } from '../stores/auth.store';
+import { Permission } from '../models/permission.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -87,6 +88,10 @@ export class AuthService {
 
 	public logout(): void {
 		this._authStore.logout();
+	}
+
+	public getPermissions(): Observable<Permission[]> {
+		return this._authApi.getPermissions();
 	}
 
 	public async fetchCurrentUser(): Promise<void> {

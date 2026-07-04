@@ -44,6 +44,20 @@ export const routes: Routes = [
 							(m) => m.BranchesPage,
 						),
 				},
+				{
+					path: 'roles',
+					loadComponent: () =>
+						import('./features/roles/pages/roles/roles.page').then(
+							(m) => m.RolesPage,
+						),
+				},
+				{
+					path: 'roles/create',
+					loadComponent: () =>
+						import('./features/roles/pages/create-role/create-role.page').then(
+							(m) => m.CreateRolePage,
+						),
+				},
 				],
 			},
 		],
