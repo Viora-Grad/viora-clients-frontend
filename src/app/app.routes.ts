@@ -37,13 +37,27 @@ export const routes: Routes = [
 					loadComponent: () =>
 						import('./features/home/pages/home/home.page').then((m) => m.HomePage),
 				},
-				{
-					path: 'branches',
-					loadComponent: () =>
-						import('./features/branches/pages/branches/branches.page').then(
-							(m) => m.BranchesPage,
-						),
-				},
+			{
+				path: 'branches',
+				loadComponent: () =>
+					import('./features/branches/pages/branches/branches.page').then(
+						(m) => m.BranchesPage,
+					),
+			},
+			{
+				path: 'branches/create',
+				loadComponent: () =>
+					import('./features/branches/pages/create-branch/create-branch.page').then(
+						(m) => m.CreateBranchPage,
+					),
+			},
+			{
+				path: 'branches/:id',
+				loadComponent: () =>
+					import('./features/branches/pages/branch-details/branch-details.page').then(
+						(m) => m.BranchDetailsPage,
+					),
+			},
 				],
 			},
 		],

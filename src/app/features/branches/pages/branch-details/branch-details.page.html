@@ -1,0 +1,215 @@
+<div class="flex flex-col h-full">
+	<p-toast />
+	<!-- Top Navbar -->
+	<div class="flex items-center gap-4 bg-white px-6 py-4 shadow-sm shrink-0">
+		<button
+			type="button"
+			class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+			(click)="goBack()"
+			aria-label="Go back"
+		>
+			<i class="pi pi-arrow-left"></i>
+		</button>
+		<h1 class="text-xl font-bold text-gray-900">{{ branch()?.address ?? 'Branch Details' }}</h1>
+	</div>
+
+	<!-- Content -->
+	<div class="flex-1 overflow-y-auto p-6">
+		<!-- Loading -->
+		@if (isLoading()) {
+			<div class="flex items-center justify-center py-20">
+				<i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+			</div>
+		} @else if (error()) {
+			<div class="flex flex-col items-center justify-center py-20 gap-4">
+				<i class="pi pi-exclamation-triangle text-3xl text-red-400"></i>
+				<p class="text-gray-500">{{ error() }}</p>
+				<p-button label="Go Back" styleClass="p-button-text" (click)="goBack()" />
+			</div>
+		} @else if (branch(); as b) {
+			<div class="flex flex-col gap-6">
+				<!-- Status -->
+				<div class="bg-white rounded-xl shadow-sm p-6">
+					<div class="flex items-center justify-between">
+						<div class="flex items-center gap-3">
+							<span
+								class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+								[ngClass]="getStatusClass(b.branchStatus)"
+							>
+								{{ getStatusLabel(b.branchStatus) }}
+							</span>
+						</div>
+						<div class="flex items-center gap-4">
+							<span class="text-sm text-gray-500">Opened {{ b.openedSinceUtc | date: 'mediumDate' }}</span>
+							<p-select
+								[options]="statusOptions"
+								optionLabel="label"
+								optionValue="value"
+								[ngModel]="b.branchStatus"
+								(ngModelChange)="onStatusChange($event)"
+								[disabled]="isUpdatingStatus()"
+								placeholder="Status"
+								styleClass="w-40"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Address & Location -->
+				<div class="bg-white rounded-xl shadow-sm p-6">
+					<h2 class="text-lg font-semibold text-gray-900 mb-4">Address & Location</h2>
+					<div class="flex flex-col gap-4">
+						<div class="flex items-start gap-3">
+							<i class="pi pi-map-marker text-gray-400 mt-0.5"></i>
+							<p class="text-gray-700">{{ b.address }}</p>
+						</div>
+						<div class="flex items-center gap-3">
+							<i class="pi pi-compass text-gray-400"></i>
+							<p class="text-gray-600 text-sm">
+								Latitude: {{ b.location.latitude }} &middot; Longitude: {{ b.location.longitude }}
+							</p>
+						</div>
+						<div #mapContainer class="branch-map"></div>
+					</div>
+				</div>
+
+				<!-- Email -->
+				@if (b.contaceEmail) {
+					<div class="bg-white rounded-xl shadow-sm p-6">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">Email</h2>
+						<div class="flex items-center gap-3">
+							<i class="pi pi-envelope text-gray-400"></i>
+							<a [href]="'mailto:' + b.contaceEmail" class="text-primary hover:underline">
+								{{ b.contaceEmail }}
+							</a>
+						</div>
+					</div>
+				}
+
+				<!-- Phone Numbers -->
+				<div class="bg-white rounded-xl shadow-sm p-6">
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-gray-900">Phone Numbers</h2>
+						<p-button
+							icon="pi pi-plus"
+							size="small"
+							styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+							(click)="openPhoneDialog()"
+						/>
+					</div>
+					@if (b.phoneNumbers.length > 0) {
+						<div class="flex flex-col gap-3">
+							@for (phone of b.phoneNumbers; track phone) {
+								<div class="flex items-center gap-3">
+									<i class="pi pi-phone text-gray-400"></i>
+									<a [href]="'tel:' + phone" class="text-primary hover:underline">
+										{{ phone }}
+									</a>
+								</div>
+							}
+						</div>
+					} @else {
+						<p class="text-sm text-gray-500">No phone numbers added.</p>
+					}
+				</div>
+
+				<!-- Services -->
+				@if (b.services.length > 0) {
+					<div class="bg-white rounded-xl shadow-sm p-6">
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">Services</h2>
+						<div class="flex flex-wrap gap-2">
+							@for (service of b.services; track service) {
+								<span
+									class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm bg-primary/10 text-primary font-medium"
+								>
+									{{ service }}
+								</span>
+							}
+						</div>
+					</div>
+				}
+			</div>
+		}
+	</div>
+
+	<!-- Phone Numbers Dialog -->
+	<p-dialog
+		header="Manage Phone Numbers"
+		[modal]="true"
+		[(visible)]="isPhoneDialogVisible"
+		styleClass="phone-dialog"
+	>
+		<div class="flex flex-col gap-4">
+			@if (phoneNumbers().length > 0) {
+				<div class="flex flex-col gap-3">
+					@for (phone of phoneNumbers(); track $index; let i = $index) {
+						<div class="flex items-center gap-2">
+							<input
+								pInputText
+								type="tel"
+								inputmode="numeric"
+								pattern="[+0-9\s\-()]*"
+								[value]="phone"
+								class="flex-1"
+								(input)="updatePhoneNumber(i, $any($event.target).value)"
+							/>
+							<button
+								type="button"
+								class="w-9 h-9 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 transition-colors shrink-0"
+								(click)="removePhoneNumber(i)"
+								aria-label="Remove phone number"
+							>
+								<i class="pi pi-trash"></i>
+							</button>
+						</div>
+					}
+				</div>
+			} @else {
+				<p class="text-sm text-gray-500">No phone numbers yet.</p>
+			}
+
+			<!-- Add new phone number -->
+			<div class="flex flex-col gap-1 pt-2 border-t border-gray-100">
+				<div class="flex items-center gap-2">
+					<input
+						pInputText
+						type="tel"
+						inputmode="numeric"
+						pattern="[+0-9\s\-()]*"
+						placeholder="Enter phone number"
+						class="flex-1"
+						[value]="newPhoneNumber()"
+						(input)="newPhoneNumber.set($any($event.target).value)"
+						(keydown.enter)="addPhoneNumber()"
+					/>
+					<p-button
+						icon="pi pi-plus"
+						size="small"
+						styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+						(click)="addPhoneNumber()"
+					/>
+				</div>
+				@if (phoneError()) {
+					<p class="text-xs text-red-500">{{ phoneError() }}</p>
+				}
+			</div>
+
+			<!-- Actions -->
+			<div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+				<p-button
+					label="Cancel"
+					styleClass="p-button-text"
+					[disabled]="isSaving()"
+					(click)="isPhoneDialogVisible.set(false)"
+				/>
+				<p-button
+					label="Save"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					[loading]="isSaving()"
+					[disabled]="isSaving()"
+					(click)="savePhoneNumbers()"
+				/>
+			</div>
+		</div>
+	</p-dialog>
+</div>
