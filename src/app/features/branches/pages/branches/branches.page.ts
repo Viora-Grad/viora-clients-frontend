@@ -6,6 +6,13 @@ import { Tag } from 'primeng/tag';
 import { BranchStore } from '../../../../core/branch/stores/branch.store';
 import { TenantStore } from '../../../../core/tenant/stores/tenant.store';
 
+const STATUS_MAP: Record<number, { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' }> = {
+	0: { label: 'Active', severity: 'success' },
+	1: { label: 'Hidden', severity: 'warn' },
+	2: { label: 'Disabled', severity: 'danger' },
+	3: { label: 'Closed', severity: 'secondary' },
+};
+
 @Component({
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-branches',
@@ -60,5 +67,9 @@ export class BranchesPage implements OnInit {
 		if (!organizationId) return;
 
 		void this.branchStore.loadBranchesPaginated(organizationId, page, 10);
+	}
+
+	protected getStatusInfo(status: number): { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' } {
+		return STATUS_MAP[status] ?? { label: 'Unknown', severity: 'secondary' };
 	}
 }
