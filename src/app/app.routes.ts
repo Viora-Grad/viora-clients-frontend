@@ -32,11 +32,18 @@ export const routes: Routes = [
 						redirectTo: 'overview',
 						pathMatch: 'full',
 					},
-					{
-						path: 'overview',
-						loadComponent: () =>
-							import('./features/home/pages/home/home.page').then((m) => m.HomePage),
-					},
+				{
+					path: 'overview',
+					loadComponent: () =>
+						import('./features/home/pages/home/home.page').then((m) => m.HomePage),
+				},
+				{
+					path: 'branches',
+					loadComponent: () =>
+						import('./features/branches/pages/branches/branches.page').then(
+							(m) => m.BranchesPage,
+						),
+				},
 				],
 			},
 		],
