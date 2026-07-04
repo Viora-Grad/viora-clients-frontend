@@ -32,32 +32,44 @@ export const routes: Routes = [
 						redirectTo: 'overview',
 						pathMatch: 'full',
 					},
-				{
-					path: 'overview',
-					loadComponent: () =>
-						import('./features/home/pages/home/home.page').then((m) => m.HomePage),
-				},
-				{
-					path: 'branches',
-					loadComponent: () =>
-						import('./features/branches/pages/branches/branches.page').then(
-							(m) => m.BranchesPage,
-						),
-				},
-				{
-					path: 'roles',
-					loadComponent: () =>
-						import('./features/roles/pages/roles/roles.page').then(
-							(m) => m.RolesPage,
-						),
-				},
-				{
-					path: 'roles/create',
-					loadComponent: () =>
-						import('./features/roles/pages/create-role/create-role.page').then(
-							(m) => m.CreateRolePage,
-						),
-				},
+					{
+						path: 'overview',
+						loadComponent: () =>
+							import('./features/home/pages/home/home.page').then((m) => m.HomePage),
+					},
+					{
+						path: 'branches',
+						loadComponent: () =>
+							import('./features/branches/pages/branches/branches.page').then(
+								(m) => m.BranchesPage,
+							),
+					},
+					{
+						path: 'branches/create',
+						loadComponent: () =>
+							import('./features/branches/pages/create-branch/create-branch.page').then(
+								(m) => m.CreateBranchPage,
+							),
+					},
+					{
+						path: 'branches/:id',
+						loadComponent: () =>
+							import('./features/branches/pages/branch-details/branch-details.page').then(
+								(m) => m.BranchDetailsPage,
+							),
+					},
+					{
+						path: 'roles',
+						loadComponent: () =>
+							import('./features/roles/pages/roles/roles.page').then((m) => m.RolesPage),
+					},
+					{
+						path: 'roles/create',
+						loadComponent: () =>
+							import('./features/roles/pages/create-role/create-role.page').then(
+								(m) => m.CreateRolePage,
+							),
+					},
 				],
 			},
 		],

@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
@@ -18,13 +19,14 @@ const STATUS_MAP: Record<number, { label: string; severity: 'success' | 'warn' |
 @Component({
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-branches',
-	imports: [TableModule, Tag, Button, DatePipe],
+	imports: [TableModule, Tag, Button, DatePipe, RouterLink],
 	templateUrl: './branches.page.html',
 	styleUrl: './branches.page.css',
 })
 export class BranchesPage implements OnInit {
 	protected readonly branchStore = inject(BranchStore);
 	private readonly _tenantStore = inject(TenantStore);
+	private readonly _router = inject(Router);
 
 	protected readonly firstItemIndex = computed(() => {
 		const totalCount = this.branchStore.totalCount();
@@ -73,5 +75,9 @@ export class BranchesPage implements OnInit {
 
 	protected getStatusInfo(status: number): { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' } {
 		return STATUS_MAP[status] ?? { label: 'Unknown', severity: 'secondary' };
+	}
+
+	protected navigateToBranch(branchId: string): void {
+		void this._router.navigate(['/branches', branchId]);
 	}
 }

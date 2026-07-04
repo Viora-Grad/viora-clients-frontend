@@ -1,0 +1,273 @@
+<p-toast />
+<div class="flex flex-col h-full">
+	<!-- Top Navbar -->
+	<div class="flex items-center gap-4 bg-white px-6 py-4 shadow-sm shrink-0">
+		<button
+			type="button"
+			class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+			(click)="goBack()"
+		>
+			<i class="pi pi-arrow-left"></i>
+		</button>
+		<h1 class="text-xl font-bold text-gray-900">Create Branch</h1>
+	</div>
+
+	<!-- Main Content -->
+	<div class="flex-1 overflow-auto p-6">
+		<form [formGroup]="form" (ngSubmit)="onSubmit()" class="max-w-2xl mx-auto space-y-6">
+			<!-- Address Information -->
+			<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+				<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">
+					Address Information
+				</h2>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="addressNumber"
+						>
+							NUMBER
+						</label>
+						<input
+							id="addressNumber"
+							type="text"
+							pInputText
+							formControlName="addressNumber"
+							placeholder="e.g. 123"
+							class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+						@if (form.controls.addressNumber.touched && form.controls.addressNumber.invalid) {
+							<p class="text-[12px] text-red-500 font-medium mt-1">Number is required.</p>
+						}
+					</div>
+
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="addressStreet"
+						>
+							STREET
+						</label>
+						<input
+							id="addressStreet"
+							type="text"
+							pInputText
+							formControlName="addressStreet"
+							placeholder="e.g. Main St"
+							class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+						@if (form.controls.addressStreet.touched && form.controls.addressStreet.invalid) {
+							<p class="text-[12px] text-red-500 font-medium mt-1">Street is required.</p>
+						}
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="addressCity"
+						>
+							CITY
+						</label>
+						<input
+							id="addressCity"
+							type="text"
+							pInputText
+							formControlName="addressCity"
+							placeholder="e.g. New York"
+							class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+						@if (form.controls.addressCity.touched && form.controls.addressCity.invalid) {
+							<p class="text-[12px] text-red-500 font-medium mt-1">City is required.</p>
+						}
+					</div>
+
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="addressState"
+						>
+							STATE
+						</label>
+						<input
+							id="addressState"
+							type="text"
+							pInputText
+							formControlName="addressState"
+							placeholder="e.g. NY"
+							class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+						@if (form.controls.addressState.touched && form.controls.addressState.invalid) {
+							<p class="text-[12px] text-red-500 font-medium mt-1">State is required.</p>
+						}
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="addressCountryId"
+						>
+							COUNTRY
+						</label>
+						<p-select
+							id="addressCountryId"
+							formControlName="addressCountryId"
+							[options]="countries()"
+							optionLabel="isoAlphaThree"
+							optionValue="id"
+							placeholder="Select a country"
+							styleClass="w-full"
+							[filter]="true"
+							filterBy="isoAlphaThree"
+						/>
+						@if (form.controls.addressCountryId.touched && form.controls.addressCountryId.invalid) {
+							<p class="text-[12px] text-red-500 font-medium mt-1">Country is required.</p>
+						}
+					</div>
+
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="addressPostalCode"
+						>
+							POSTAL CODE
+						</label>
+						<input
+							id="addressPostalCode"
+							type="text"
+							pInputText
+							formControlName="addressPostalCode"
+							placeholder="e.g. 10001"
+							class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+						@if (
+							form.controls.addressPostalCode.touched && form.controls.addressPostalCode.invalid
+						) {
+							<p class="text-[12px] text-red-500 font-medium mt-1">Postal code is required.</p>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Location -->
+			<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+				<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Location</h2>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="latitude"
+						>
+							LATITUDE
+						</label>
+						<input
+							id="latitude"
+							type="text"
+							pInputText
+							formControlName="latitude"
+							placeholder="e.g. 40.7128"
+							class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+					</div>
+
+					<div class="space-y-1.5">
+						<label
+							class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+							for="longitude"
+						>
+							LONGITUDE
+						</label>
+						<input
+							id="longitude"
+							type="text"
+							pInputText
+							formControlName="longitude"
+							placeholder="e.g. -74.0060"
+							class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+					</div>
+				</div>
+			</div>
+
+			<!-- Contact -->
+			<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+				<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Contact</h2>
+
+				<div class="space-y-1.5">
+					<label
+						class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+						for="contactEmail"
+					>
+						EMAIL
+					</label>
+					<input
+						id="contactEmail"
+						type="email"
+						pInputText
+						formControlName="contactEmail"
+						placeholder="e.g. branch@example.com"
+						class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+					/>
+					@if (form.controls.contactEmail.touched && form.controls.contactEmail.invalid) {
+						<p class="text-[12px] text-red-500 font-medium mt-1">Please enter a valid email.</p>
+					}
+				</div>
+			</div>
+
+			<!-- Services -->
+			<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+				<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Services</h2>
+
+				@if (isLoading()) {
+					<div class="flex items-center justify-center py-8">
+						<i class="pi pi-spin pi-spinner text-gray-400 text-2xl"></i>
+					</div>
+				} @else {
+					<div class="space-y-1">
+						@for (service of serviceTypes(); track service; let i = $index) {
+							<label
+								[for]="'service-' + i"
+								class="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+							>
+								<p-checkbox
+									[binary]="true"
+									[formControl]="servicesArray.at(i)"
+									[inputId]="'service-' + i"
+									name="service"
+								/>
+								<span class="text-sm font-medium text-gray-900">{{ service }}</span>
+							</label>
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Submit -->
+			<div class="flex justify-end gap-3">
+				<p-button
+					label="Cancel"
+					[outlined]="true"
+					[rounded]="false"
+					type="button"
+					styleClass="!text-gray-600 !border-gray-300"
+					(click)="goBack()"
+				/>
+				<p-button
+					label="Create Branch"
+					icon="pi pi-check"
+					[raised]="true"
+					[rounded]="false"
+					type="submit"
+					[loading]="isSubmitting()"
+					[disabled]="form.invalid || isSubmitting()"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				/>
+			</div>
+		</form>
+	</div>
+</div>
