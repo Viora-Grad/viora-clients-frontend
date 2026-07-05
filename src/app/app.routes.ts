@@ -94,6 +94,13 @@ export const routes: Routes = [
 						loadComponent: () =>
 							import('./features/profile/pages/profile/profile.page').then((m) => m.ProfilePage),
 					},
+					{
+						path: 'vivi',
+						loadComponent: () =>
+							import('./features/vivi-marketing/pages/vivi-marketing/vivi-marketing.page').then(
+								(m) => m.ViviMarketingPage,
+							),
+					},
 				],
 			},
 		],

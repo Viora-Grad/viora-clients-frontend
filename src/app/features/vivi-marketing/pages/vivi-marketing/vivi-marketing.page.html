@@ -1,0 +1,61 @@
+<p-toast />
+
+<div class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+	<div class="w-full max-w-lg">
+		@if (facebookStore.pages().length === 0 && !facebookStore.isLoading()) {
+			<div class="text-center">
+				<h1 class="text-2xl font-bold text-gray-900">ViVi Marketing</h1>
+				<p class="mt-2 text-gray-500">Connect your Facebook page to start managing your marketing.</p>
+				<p-button
+					label="Connect Facebook Page"
+					icon="pi pi-facebook"
+					styleClass="mt-6"
+					(click)="onConnectFacebook()" />
+			</div>
+		}
+
+		@if (facebookStore.isLoading()) {
+			<div class="flex flex-col items-center gap-4">
+				<p-progressSpinner strokeWidth="4" />
+				<span class="text-gray-500">Loading...</span>
+			</div>
+		}
+
+		@if (facebookStore.pages().length > 0 && !facebookStore.isLoading()) {
+			<div>
+				<h2 class="text-xl font-bold text-gray-900">Select a Facebook Page</h2>
+				<p class="mt-1 text-sm text-gray-500">Choose which page you want to connect.</p>
+
+				<div class="mt-4 flex flex-col gap-3">
+					@for (page of facebookStore.pages(); track page.id) {
+					<p-card
+						styleClass="cursor-pointer transition-all hover:shadow-md"
+						[class]="facebookStore.selectedPageId() === page.id ? 'selected-page-card' : ''">
+							<div class="flex items-center justify-between">
+								<div>
+									<p class="font-semibold text-gray-900">{{ page.name }}</p>
+									<p class="text-sm text-gray-500">{{ page.category }}</p>
+								</div>
+								<p-button
+									[label]="facebookStore.selectedPageId() === page.id ? 'Selected' : 'Select'"
+									[outlined]="facebookStore.selectedPageId() !== page.id"
+									Severity="primary"
+									size="small"
+									(click)="onPageSelect(page.id)" />
+							</div>
+						</p-card>
+					}
+				</div>
+
+				<div class="mt-6 flex justify-end gap-3">
+					<p-button label="Cancel" severity="secondary" [outlined]="true" (click)="facebookStore.reset()" />
+					<p-button
+						label="Connect"
+						icon="pi pi-check"
+						[disabled]="!facebookStore.selectedPageId()"
+						(click)="onConnectPage()" />
+				</div>
+			</div>
+		}
+	</div>
+</div>
