@@ -2,7 +2,23 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { Role } from '../../role/models/role.model';
 import { StaffListResponse } from '../dtos/staff.dto';
+import { StaffDetail } from '../models/staff-detail.model';
+
+export interface UpdateStaffRequest {
+	firstName: string | null;
+	lastName: string | null;
+	username: string | null;
+	password: string | null;
+	dateOfBirth: string | null;
+	gender: string | null;
+	phoneNumber: string | null;
+}
+
+export interface UpdateStaffRolesRequest {
+	roleIds: string[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class StaffApi {
@@ -16,5 +32,27 @@ export class StaffApi {
 		return this._http.get<StaffListResponse>(`${environment.apiBaseUrl}/Staffs`, {
 			params: { organizationId, page: page.toString(), pageSize: pageSize.toString() },
 		});
+	}
+
+	public getStaffById(id: string): Observable<StaffDetail> {
+		return this._http.get<StaffDetail>(`${environment.apiBaseUrl}/Staffs/${id}`);
+	}
+
+	public updateStaff(id: string, request: UpdateStaffRequest): Observable<unknown> {
+		return this._http.put(`${environment.apiBaseUrl}/Staffs/${id}`, request);
+	}
+
+	public deleteStaff(id: string): Observable<unknown> {
+		return this._http.delete(`${environment.apiBaseUrl}/Staffs/${id}`);
+	}
+
+	public getRoles(organizationId: string): Observable<Role[]> {
+		return this._http.get<Role[]>(
+			`${environment.apiBaseUrl}/Staffs/organizations/${organizationId}/roles`,
+		);
+	}
+
+	public updateStaffRoles(id: string, request: UpdateStaffRolesRequest): Observable<unknown> {
+		return this._http.patch(`${environment.apiBaseUrl}/Staffs/${id}/role`, request);
 	}
 }

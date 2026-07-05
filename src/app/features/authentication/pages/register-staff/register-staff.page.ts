@@ -110,7 +110,7 @@ export class RegisterStaffPage implements OnInit {
 					firstName: formValue.firstName,
 					lastName: formValue.lastName,
 					dateOfBirth: formValue.dateOfBirth
-						? formValue.dateOfBirth.toISOString().split('T')[0]
+						? `${formValue.dateOfBirth.getFullYear()}-${String(formValue.dateOfBirth.getMonth() + 1).padStart(2, '0')}-${String(formValue.dateOfBirth.getDate()).padStart(2, '0')}`
 						: '',
 					gender: formValue.gender,
 					phoneNumber: formValue.phoneNumber,

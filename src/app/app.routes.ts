@@ -78,6 +78,13 @@ export const routes: Routes = [
 							),
 					},
 					{
+						path: 'staffs/:id',
+						loadComponent: () =>
+							import('./features/staff/pages/staff-details/staff-details.page').then(
+								(m) => m.StaffDetailsPage,
+							),
+					},
+					{
 						path: 'roles',
 						loadComponent: () =>
 							import('./features/roles/pages/roles/roles.page').then((m) => m.RolesPage),
