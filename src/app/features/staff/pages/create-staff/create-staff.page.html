@@ -1,0 +1,139 @@
+<p-toast />
+<div class="flex flex-col h-full">
+	<!-- Top Navbar -->
+	<div class="flex items-center gap-4 bg-white px-6 py-4 shadow-sm shrink-0">
+		<button
+			type="button"
+			class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+			(click)="goBack()"
+		>
+			<i class="pi pi-arrow-left"></i>
+		</button>
+		<h1 class="text-xl font-bold text-gray-900">Create Staff Invitation</h1>
+	</div>
+
+	<!-- Main Content -->
+	<div class="flex-1 overflow-auto p-6">
+		@if (invitationLink()) {
+			<div class="max-w-2xl mx-auto space-y-6">
+				<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+					<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Invitation Created</h2>
+					<p class="text-sm text-gray-600">Share this link with the staff member to complete their registration:</p>
+					<div class="flex items-center gap-2">
+						<input
+							type="text"
+							pInputText
+							[readonly]="true"
+							[value]="invitationLink()"
+							class="flex-1 bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+						/>
+						<button
+							type="button"
+							class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+							(click)="copyLink()"
+						>
+							<i class="pi pi-copy text-gray-600"></i>
+						</button>
+					</div>
+				</div>
+				<div class="flex justify-end">
+					<p-button
+						label="Back to Staff"
+						icon="pi pi-arrow-left"
+						[outlined]="true"
+						[rounded]="false"
+						type="button"
+						styleClass="!text-gray-600 !border-gray-300"
+						routerLink="/staffs"
+					/>
+				</div>
+			</div>
+		} @else {
+			<form [formGroup]="form" (ngSubmit)="onSubmit()" class="max-w-2xl mx-auto space-y-6">
+				<!-- Branches -->
+				<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+					<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Branches</h2>
+
+					@if (isLoading()) {
+						<div class="flex items-center justify-center py-8">
+							<i class="pi pi-spin pi-spinner text-gray-400 text-2xl"></i>
+						</div>
+					} @else {
+						<div class="space-y-1.5">
+						<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="branchIds">
+							SELECT BRANCHES
+						</label>
+						<p-multiSelect
+							id="branchIds"
+							formControlName="branchIds"
+							[options]="branches()"
+							optionLabel="address"
+							optionValue="branchId"
+							placeholder="Select branches"
+							[showClear]="true"
+							styleClass="w-full"
+							class="w-full"
+						/>
+							@if (form.controls.branchIds.touched && form.controls.branchIds.invalid) {
+								<p class="text-[12px] text-red-500 font-medium mt-1">At least one branch is required.</p>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Roles -->
+				<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+					<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Roles</h2>
+
+					@if (isLoading()) {
+						<div class="flex items-center justify-center py-8">
+							<i class="pi pi-spin pi-spinner text-gray-400 text-2xl"></i>
+						</div>
+					} @else {
+						<div class="space-y-1.5">
+						<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="roleIds">
+							SELECT ROLES
+						</label>
+						<p-multiSelect
+							id="roleIds"
+							formControlName="roleIds"
+							[options]="roles()"
+							optionLabel="name"
+							optionValue="id"
+							placeholder="Select roles"
+							[showClear]="true"
+							styleClass="w-full"
+							class="w-full"
+						/>
+							@if (form.controls.roleIds.touched && form.controls.roleIds.invalid) {
+								<p class="text-[12px] text-red-500 font-medium mt-1">At least one role is required.</p>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Submit -->
+				<div class="flex justify-end gap-3">
+					<p-button
+						label="Cancel"
+						[outlined]="true"
+						[rounded]="false"
+						type="button"
+						styleClass="!text-gray-600 !border-gray-300"
+						(click)="goBack()"
+					/>
+					<p-button
+						label="Create Invitation"
+						icon="pi pi-send"
+						[raised]="true"
+						[rounded]="false"
+						type="submit"
+						[loading]="isSubmitting()"
+						[disabled]="form.invalid || isSubmitting()"
+						styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					/>
+				</div>
+			</form>
+		}
+	</div>
+</div>

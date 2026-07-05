@@ -11,6 +11,8 @@ const WHITELISTED_URLS = [
 	'/auth/logout',
 	'/auth/current-user',
 	'/auth/google-login',
+	'/staff/register',
+	'/validate-username',
 ];
 
 let isRefreshing = false;

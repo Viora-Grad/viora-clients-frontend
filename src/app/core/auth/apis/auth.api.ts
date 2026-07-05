@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { Permission } from '../models/permission.model';
 import { LoginRequest, LoginResponse } from '../dtos/login.dto';
 import { StaffMeResponse, UserMeResponse } from '../dtos/me.dto';
 
@@ -35,5 +36,9 @@ export class AuthApi {
 
 	public getMe(): Observable<UserMeResponse> {
 		return this._http.get<UserMeResponse>(`${environment.apiBaseUrl}/auth/me`);
+	}
+
+	public getPermissions(): Observable<Permission[]> {
+		return this._http.get<Permission[]>(`${environment.apiBaseUrl}/auth/permissions`);
 	}
 }

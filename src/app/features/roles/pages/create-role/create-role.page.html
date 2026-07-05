@@ -1,0 +1,116 @@
+<p-toast />
+<div class="flex flex-col h-full">
+	<!-- Top Navbar -->
+	<div class="flex items-center gap-4 bg-white px-6 py-4 shadow-sm shrink-0">
+		<button
+			type="button"
+			class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+			(click)="goBack()"
+		>
+			<i class="pi pi-arrow-left"></i>
+		</button>
+		<h1 class="text-xl font-bold text-gray-900">Create Role</h1>
+	</div>
+
+	<!-- Main Content -->
+	<div class="flex-1 overflow-auto p-6">
+		<form [formGroup]="form" (ngSubmit)="onSubmit()" class="max-w-2xl mx-auto space-y-6">
+			<!-- Role Name -->
+			<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+				<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Role Information</h2>
+
+				<div class="space-y-1.5">
+					<label
+						class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+						for="roleName"
+					>
+						ROLE NAME
+					</label>
+					<input
+						id="roleName"
+						type="text"
+						pInputText
+						formControlName="roleName"
+						placeholder="e.g. Manager"
+						class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+					/>
+					@if (form.controls.roleName.touched && form.controls.roleName.invalid) {
+						<p class="text-[12px] text-red-500 font-medium mt-1">Role name is required.</p>
+					}
+				</div>
+
+				<div class="space-y-1.5">
+					<label
+						class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+						for="roleDescription"
+					>
+						DESCRIPTION
+					</label>
+					<textarea
+						id="roleDescription"
+						pTextarea
+						formControlName="roleDescription"
+						placeholder="Optional description for this role"
+						rows="3"
+						class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all resize-none"
+					></textarea>
+				</div>
+			</div>
+
+			<!-- Permissions -->
+			<div class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+				<h2 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Permissions</h2>
+
+				@if (isLoading()) {
+					<div class="flex items-center justify-center py-8">
+						<i class="pi pi-spin pi-spinner text-gray-400 text-2xl"></i>
+					</div>
+				} @else {
+					<div class="space-y-1">
+						@for (permission of permissions(); track permission.id; let i = $index) {
+							<label
+								[for]="'perm-' + permission.id"
+								class="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+							>
+								<p-checkbox
+									[binary]="true"
+									[formControl]="permissionsArray.at(i)"
+									[inputId]="'perm-' + permission.id"
+									name="permission"
+								/>
+								<div class="flex flex-col">
+									<span class="text-sm font-medium text-gray-900">{{
+										permission.description
+									}}</span>
+									<span class="text-xs text-gray-400">{{ permission.name }}</span>
+								</div>
+							</label>
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Submit -->
+			<div class="flex justify-end gap-3">
+				<p-button
+					label="Cancel"
+					[outlined]="true"
+					[rounded]="false"
+					type="button"
+					styleClass="!text-gray-600 !border-gray-300"
+					(click)="goBack()"
+				/>
+				<p-button
+					label="Create Role"
+					icon="pi pi-check"
+					[raised]="true"
+					[rounded]="false"
+					type="submit"
+					[loading]="isSubmitting()"
+					[disabled]="form.invalid || isSubmitting()"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				/>
+			</div>
+		</form>
+	</div>
+</div>

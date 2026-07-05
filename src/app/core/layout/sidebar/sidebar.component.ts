@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Dialog } from 'primeng/dialog';
 import { AuthStore } from '../../auth/stores/auth.store';
 import { BranchStore } from '../../branch/stores/branch.store';
@@ -17,6 +17,7 @@ export class SidebarComponent {
 	private readonly _authStore = inject(AuthStore);
 	private readonly _branchStore = inject(BranchStore);
 	private readonly _tenantStore = inject(TenantStore);
+	private readonly _router = inject(Router);
 
 	public readonly items = input<NavItem[]>([]);
 
@@ -67,5 +68,9 @@ export class SidebarComponent {
 	protected selectBranch(branchId: string | null): void {
 		this._branchStore.setCurrentBranch(branchId);
 		this.branchModalVisible.set(false);
+	}
+
+	protected navigateToProfile(): void {
+		void this._router.navigate(['/profile']);
 	}
 }

@@ -98,7 +98,10 @@ export const AuthStore = signalStore(
 				sessionStorage.removeItem(REFRESH_TOKEN_KEY);
 				sessionStorage.removeItem(IS_STAFF_KEY);
 				localStorage.removeItem(REMEMBER_ME_KEY);
-				patchState(store, initialState);
+				patchState(store, {
+					...initialState,
+					initialized: true,
+				});
 			},
 		};
 	}),
