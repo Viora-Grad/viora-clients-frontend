@@ -22,7 +22,7 @@ const initialState: StaffState = {
 	isLoading: false,
 	error: null,
 	currentPage: 1,
-	pageSize: 10,
+	pageSize: 5,
 	totalCount: 0,
 	totalPages: 0,
 	hasNextPage: false,

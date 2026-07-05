@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Button } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
@@ -25,6 +25,7 @@ const STATUS_MAP: Record<string, { label: string; severity: 'success' | 'warn' |
 export class StaffPage implements OnInit {
 	protected readonly staffStore = inject(StaffStore);
 	private readonly _tenantStore = inject(TenantStore);
+	private readonly _router = inject(Router);
 
 	protected readonly firstItemIndex = computed(() => {
 		const totalCount = this.staffStore.totalCount();
@@ -68,10 +69,14 @@ export class StaffPage implements OnInit {
 		const organizationId = this._tenantStore.organizationId();
 		if (!organizationId) return;
 
-		void this.staffStore.loadStaffPaginated(organizationId, page, 10);
+		void this.staffStore.loadStaffPaginated(organizationId, page, 5);
 	}
 
 	protected getStatusInfo(status: string): { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' } {
 		return STATUS_MAP[status] ?? { label: status, severity: 'secondary' };
+	}
+
+	protected navigateToStaff(staffId: string): void {
+		void this._router.navigate(['/staffs', staffId]);
 	}
 }
