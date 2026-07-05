@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { firstValueFrom, Observable } from 'rxjs';
 import { TenantStore } from '../../tenant/stores/tenant.store';
+import { BranchStore } from '../../branch/stores/branch.store';
 import { AuthApi } from '../apis/auth.api';
 import { AuthStore } from '../stores/auth.store';
 import { Permission } from '../models/permission.model';
@@ -10,6 +12,8 @@ export class AuthService {
 	private readonly _authApi = inject(AuthApi);
 	private readonly _authStore = inject(AuthStore);
 	private readonly _tenantStore = inject(TenantStore);
+	private readonly _branchStore = inject(BranchStore);
+	private readonly _router = inject(Router);
 
 	public async login(username: string, password: string, rememberMe = true): Promise<boolean> {
 		this._authStore.setLoading();
@@ -88,6 +92,7 @@ export class AuthService {
 
 	public logout(): void {
 		this._authStore.logout();
+		void this._router.navigate(['/auth/login']);
 	}
 
 	public getPermissions(): Observable<Permission[]> {
@@ -109,6 +114,7 @@ export class AuthService {
 					firstName: response.firstName,
 					lastName: response.lastName,
 				});
+				this._branchStore.loadBranchesFromStaff(response.branches);
 			} else {
 				const response = await firstValueFrom(this._authApi.getMe());
 				this._authStore.setCurrentUser({
@@ -119,6 +125,10 @@ export class AuthService {
 					dateOfBirth: response.dateOfBirth,
 					gender: response.gender,
 				});
+				const organizationId = this._tenantStore.organizationId();
+				if (organizationId) {
+					await this._branchStore.loadBranches(organizationId);
+				}
 			}
 		} catch {
 			// Silently fail - user details are not critical

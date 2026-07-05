@@ -15,7 +15,7 @@ export class ShellComponent {
 		{ label: 'Overview', icon: 'pi pi-th-large', route: '/overview' },
 		{ label: 'Organization', icon: 'pi pi-sitemap', route: '/organization' },
 		{ label: 'Branches', icon: 'pi pi-building', route: '/branches' },
-		{ label: 'Staff', icon: 'pi pi-users', route: '/staff' },
+		{ label: 'Staff', icon: 'pi pi-users', route: '/staffs' },
 		{ label: 'Roles', icon: 'pi pi-user-edit', route: '/roles' },
 		{ label: 'Billing', icon: 'pi pi-dollar', route: '/billing' },
 	]);

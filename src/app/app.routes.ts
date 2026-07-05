@@ -22,6 +22,13 @@ export const routes: Routes = [
 					),
 			},
 			{
+				path: 'staffs/create',
+				loadComponent: () =>
+					import('./features/authentication/pages/register-staff/register-staff.page').then(
+						(m) => m.RegisterStaffPage,
+					),
+			},
+			{
 				path: '',
 				canActivate: [authGuard],
 				loadComponent: () =>
@@ -59,6 +66,18 @@ export const routes: Routes = [
 							),
 					},
 					{
+						path: 'staffs',
+						loadComponent: () =>
+							import('./features/staff/pages/staff/staff.page').then((m) => m.StaffPage),
+					},
+					{
+						path: 'staffs/invite',
+						loadComponent: () =>
+							import('./features/staff/pages/create-staff/create-staff.page').then(
+								(m) => m.CreateStaffPage,
+							),
+					},
+					{
 						path: 'roles',
 						loadComponent: () =>
 							import('./features/roles/pages/roles/roles.page').then((m) => m.RolesPage),
@@ -69,6 +88,11 @@ export const routes: Routes = [
 							import('./features/roles/pages/create-role/create-role.page').then(
 								(m) => m.CreateRolePage,
 							),
+					},
+					{
+						path: 'profile',
+						loadComponent: () =>
+							import('./features/profile/pages/profile/profile.page').then((m) => m.ProfilePage),
 					},
 				],
 			},

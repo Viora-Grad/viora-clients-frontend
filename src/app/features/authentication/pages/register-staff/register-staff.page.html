@@ -1,0 +1,211 @@
+<p-toast />
+<div class="min-h-screen flex items-center justify-center p-4 bg-gray-50/50">
+	<div
+		class="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 shadow-[0_2px_40px_rgba(0,0,0,0.04)] border border-gray-100"
+	>
+		<!-- Header -->
+		<div class="text-center mb-8">
+			<h1 class="text-[32px] font-extrabold text-[#201335] tracking-tight mb-2">
+				Create Your Account
+			</h1>
+			<p class="text-gray-500 font-medium text-[15px]">
+				Complete your registration to get started.
+			</p>
+		</div>
+
+		<!-- Form -->
+		<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+			<!-- First Name -->
+			<div class="space-y-1.5">
+				<label
+					class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+					for="firstName"
+				>
+					FIRST NAME
+				</label>
+				<input
+					id="firstName"
+					type="text"
+					pInputText
+					formControlName="firstName"
+					placeholder="e.g. John"
+					class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+				/>
+				@if (form.controls.firstName.touched && form.controls.firstName.invalid) {
+					<p class="text-[12px] text-red-500 font-medium mt-1">First name is required.</p>
+				}
+			</div>
+
+			<!-- Last Name -->
+			<div class="space-y-1.5">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="lastName">
+					LAST NAME
+				</label>
+				<input
+					id="lastName"
+					type="text"
+					pInputText
+					formControlName="lastName"
+					placeholder="e.g. Doe"
+					class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+				/>
+				@if (form.controls.lastName.touched && form.controls.lastName.invalid) {
+					<p class="text-[12px] text-red-500 font-medium mt-1">Last name is required.</p>
+				}
+			</div>
+
+			<!-- Date of Birth & Gender -->
+			<div class="grid grid-cols-2 gap-4">
+				<div class="space-y-1.5">
+					<label
+						class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+						for="dateOfBirth"
+					>
+						DATE OF BIRTH
+					</label>
+					<p-datepicker
+						id="dateOfBirth"
+						formControlName="dateOfBirth"
+						[showIcon]="true"
+						dateFormat="dd/mm/yy"
+						placeholder="dd/mm/yyyy"
+						styleClass="w-full"
+						inputStyleClass="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+					/>
+					@if (form.controls.dateOfBirth.touched && form.controls.dateOfBirth.invalid) {
+						<p class="text-[12px] text-red-500 font-medium mt-1">Required.</p>
+					}
+				</div>
+
+				<div class="space-y-1.5">
+					<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="gender">
+						GENDER
+					</label>
+					<p-select
+						id="gender"
+						formControlName="gender"
+						[options]="genderOptions"
+						optionLabel="label"
+						optionValue="value"
+						placeholder="Select"
+						styleClass="w-full"
+						class="w-full"
+					/>
+					@if (form.controls.gender.touched && form.controls.gender.invalid) {
+						<p class="text-[12px] text-red-500 font-medium mt-1">Required.</p>
+					}
+				</div>
+			</div>
+
+			<!-- Phone Number -->
+			<div class="space-y-1.5">
+				<label
+					class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+					for="phoneNumber"
+				>
+					PHONE NUMBER
+				</label>
+				<input
+					id="phoneNumber"
+					type="tel"
+					pInputText
+					formControlName="phoneNumber"
+					placeholder="e.g. +1234567890"
+					class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+				/>
+				@if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) {
+					<p class="text-[12px] text-red-500 font-medium mt-1">Phone number is required.</p>
+				}
+			</div>
+
+			<!-- Username -->
+			<div class="space-y-1.5">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="username">
+					USERNAME
+				</label>
+				<input
+					id="username"
+					type="text"
+					pInputText
+					formControlName="username"
+					placeholder="e.g. john_doe"
+					class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+				/>
+				@if (form.controls.username.touched && form.controls.username.invalid) {
+					<div class="space-y-1 mt-1">
+						@if (form.controls.username.errors?.['required']) {
+							<p class="text-[12px] text-red-500 font-medium">Username is required.</p>
+						} @else {
+							@if (form.controls.username.errors?.['minlength']) {
+								<p class="text-[12px] text-red-500 font-medium">Must be at least 3 characters.</p>
+							}
+							@if (form.controls.username.errors?.['maxlength']) {
+								<p class="text-[12px] text-red-500 font-medium">Must be at most 20 characters.</p>
+							}
+							@if (form.controls.username.errors?.['pattern']) {
+								<p class="text-[12px] text-red-500 font-medium">
+									Only letters, numbers, and underscores allowed.
+								</p>
+							}
+							@if (form.controls.username.errors?.['usernameTaken']) {
+								<p class="text-[12px] text-red-500 font-medium">Username is already taken.</p>
+							}
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Password -->
+			<div class="space-y-1.5">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="password">
+					PASSWORD
+				</label>
+				<p-password
+					id="password"
+					formControlName="password"
+					name="password"
+					[toggleMask]="true"
+					[feedback]="false"
+					class="w-full"
+					inputStyleClass="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+				/>
+				@if (form.controls.password.touched && form.controls.password.invalid) {
+					<div class="space-y-1 mt-1">
+						@if (form.controls.password.errors?.['required']) {
+							<p class="text-[12px] text-red-500 font-medium">Password is required.</p>
+						} @else {
+							@if (form.controls.password.errors?.['minLength']) {
+								<p class="text-[12px] text-red-500 font-medium">Must be at least 8 characters.</p>
+							}
+							@if (form.controls.password.errors?.['noCapital']) {
+								<p class="text-[12px] text-red-500 font-medium">Must contain 1 capital letter.</p>
+							}
+							@if (form.controls.password.errors?.['noNumber']) {
+								<p class="text-[12px] text-red-500 font-medium">Must contain 1 number.</p>
+							}
+							@if (form.controls.password.errors?.['noSpecial']) {
+								<p class="text-[12px] text-red-500 font-medium">
+									Must contain 1 special character.
+								</p>
+							}
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Submit -->
+			<div class="pt-4">
+				<p-button
+					type="submit"
+					label="Create Account"
+					[size]="'large'"
+					[rounded]="false"
+					[raised]="true"
+					[loading]="isSubmitting()"
+					[disabled]="form.invalid || isSubmitting()"
+					styleClass="w-full !bg-primary !border-primary hover:!bg-primary-700"
+				/>
+			</div>
+		</form>
+	</div>
+</div>
