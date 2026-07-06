@@ -101,6 +101,28 @@ export const routes: Routes = [
 						loadComponent: () =>
 							import('./features/profile/pages/profile/profile.page').then((m) => m.ProfilePage),
 					},
+				{
+					path: 'branch-management',
+					children: [
+						{
+							path: '',
+							redirectTo: 'overview',
+							pathMatch: 'full',
+						},
+						{
+							path: 'overview',
+							loadComponent: () =>
+								import('./features/home/pages/home/home.page').then((m) => m.HomePage),
+						},
+						{
+							path: 'schedule',
+							loadComponent: () =>
+								import('./features/schedule/pages/schedule/schedule.page').then(
+									(m) => m.SchedulePage,
+								),
+						},
+					],
+				},
 				],
 			},
 		],

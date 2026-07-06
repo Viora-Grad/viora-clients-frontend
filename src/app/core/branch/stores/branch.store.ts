@@ -12,6 +12,8 @@ import { BranchApi } from '../apis/branch.api';
 import { mapApiResponseToBranch, mapStaffBranchToBranch } from '../dtos/branch.dto';
 import { Branch } from '../models/branch.model';
 
+const BRANCH_STORAGE_KEY = 'viora_current_branch_id';
+
 interface BranchState {
 	branches: Branch[];
 	currentBranchId: string | null;
@@ -55,13 +57,31 @@ export const BranchStore = signalStore(
 	withMethods((store) => {
 		const branchApi = inject(BranchApi);
 
+		function _persistBranchId(branchId: string | null): void {
+			if (branchId) {
+				localStorage.setItem(BRANCH_STORAGE_KEY, branchId);
+			} else {
+				localStorage.removeItem(BRANCH_STORAGE_KEY);
+			}
+		}
+
+		function _restoreBranchId(branches: Branch[]): string | null {
+			const stored = localStorage.getItem(BRANCH_STORAGE_KEY);
+			if (stored && branches.some((b) => b.id === stored)) {
+				return stored;
+			}
+			localStorage.removeItem(BRANCH_STORAGE_KEY);
+			return null;
+		}
+
 		return {
 			async loadBranches(organizationId: string): Promise<void> {
 				patchState(store, { isLoading: true, error: null });
 				try {
 					const response = await firstValueFrom(branchApi.getBranches(organizationId));
 					const branches = response.items.map(mapApiResponseToBranch);
-					patchState(store, { branches, isLoading: false });
+					const restoredBranchId = _restoreBranchId(branches);
+					patchState(store, { branches, currentBranchId: restoredBranchId, isLoading: false });
 				} catch {
 					patchState(store, { error: 'Failed to load branches', isLoading: false });
 				}
@@ -93,13 +113,17 @@ export const BranchStore = signalStore(
 			},
 			loadBranchesFromStaff(staffBranches: StaffBranch[]): void {
 				const branches = staffBranches.map(mapStaffBranchToBranch);
-				const currentBranchId = branches.length > 0 ? branches[0].id : null;
+				const restoredBranchId = _restoreBranchId(branches);
+				const currentBranchId = restoredBranchId ?? (branches.length > 0 ? branches[0].id : null);
+				_persistBranchId(currentBranchId);
 				patchState(store, { branches, currentBranchId });
 			},
 			setCurrentBranch(branchId: string | null): void {
+				_persistBranchId(branchId);
 				patchState(store, { currentBranchId: branchId });
 			},
 			clear(): void {
+				localStorage.removeItem(BRANCH_STORAGE_KEY);
 				patchState(store, initialState);
 			},
 		};
