@@ -26,6 +26,7 @@ export class ShellComponent {
 
 	private readonly _branchNavItems: NavItem[] = [
 		{ label: 'Schedule', icon: 'pi pi-calendar', route: '/branch-management/schedule' },
+		{ label: 'Appointments', icon: 'pi pi-calendar-clock', route: '/branch-management/appointments' },
 		{ label: 'Services', icon: 'pi pi-briefcase', route: '/branch-management/services' },
 		{ label: 'Staff', icon: 'pi pi-users', route: '/branch-management/staffs' },
 		{ label: 'Organization', icon: 'pi pi-sitemap', route: '/branch-management/organization' },

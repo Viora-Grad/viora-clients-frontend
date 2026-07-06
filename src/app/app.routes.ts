@@ -114,13 +114,20 @@ export const routes: Routes = [
 							loadComponent: () =>
 								import('./features/home/pages/home/home.page').then((m) => m.HomePage),
 						},
-						{
-							path: 'schedule',
-							loadComponent: () =>
-								import('./features/schedule/pages/schedule/schedule.page').then(
-									(m) => m.SchedulePage,
-								),
-						},
+					{
+						path: 'schedule',
+						loadComponent: () =>
+							import('./features/schedule/pages/schedule/schedule.page').then(
+								(m) => m.SchedulePage,
+							),
+					},
+					{
+						path: 'appointments',
+						loadComponent: () =>
+							import('./features/appointments/pages/appointments/appointments.page').then(
+								(m) => m.AppointmentsPage,
+							),
+					},
 					{
 						path: 'services',
 						loadComponent: () =>
