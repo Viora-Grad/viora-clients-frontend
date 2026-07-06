@@ -121,6 +121,27 @@ export const routes: Routes = [
 									(m) => m.SchedulePage,
 								),
 						},
+					{
+						path: 'services',
+						loadComponent: () =>
+							import('./features/services/pages/services/services.page').then(
+								(m) => m.ServicesPage,
+							),
+					},
+					{
+						path: 'services/:id/form',
+						loadComponent: () =>
+							import('./features/services/pages/service-form/service-form.page').then(
+								(m) => m.ServiceFormPage,
+							),
+					},
+						{
+							path: 'staffs',
+							loadComponent: () =>
+								import('./features/staff/pages/branch-staff/branch-staff.page').then(
+									(m) => m.BranchStaffPage,
+								),
+						},
 					],
 				},
 				],

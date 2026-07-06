@@ -63,6 +63,31 @@ export const StaffStore = signalStore(
 					patchState(store, { error: 'Failed to load staff', isLoading: false });
 				}
 			},
+			async loadStaffByBranch(
+				branchId: string,
+				page: number,
+				pageSize: number,
+			): Promise<void> {
+				patchState(store, { isLoading: true, error: null });
+				try {
+					const response = await firstValueFrom(
+						staffApi.getStaffByBranch(branchId, page, pageSize),
+					);
+					const staff = response.items.map(mapApiResponseToStaff);
+					patchState(store, {
+						staff,
+						isLoading: false,
+						currentPage: Number(response.page),
+						pageSize: Number(response.pageSize),
+						totalCount: Number(response.totalCount),
+						totalPages: Number(response.totalPages),
+						hasNextPage: response.hasNextPage,
+						hasPreviousPage: response.hasPreviousPage,
+					});
+				} catch {
+					patchState(store, { error: 'Failed to load staff', isLoading: false });
+				}
+			},
 		};
 	}),
 );

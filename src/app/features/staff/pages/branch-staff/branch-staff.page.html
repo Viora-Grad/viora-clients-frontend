@@ -1,0 +1,237 @@
+<div class="flex flex-col h-full">
+	<p-toast />
+	<!-- Top Navbar -->
+	<div class="flex items-center justify-between bg-white px-6 py-4 shadow-sm shrink-0">
+		<h1 class="text-xl font-bold text-gray-900">Staff Services</h1>
+	</div>
+
+	<!-- Main Content -->
+	<div class="flex-1 overflow-auto p-6">
+		<div class="bg-white rounded-2xl shadow-sm flex flex-col overflow-hidden">
+			<div class="overflow-auto max-h-[60vh]">
+				<p-table
+					[value]="staff()"
+					[loading]="isLoading()"
+					[tableStyle]="{ 'min-width': '60rem' }"
+					[rows]="pageSize()"
+					[showGridlines]="false"
+					[stripedRows]="false"
+					styleClass="p-datatable-lg"
+				>
+					<ng-template #header>
+						<tr>
+							<th
+								class="!text-xs !font-semibold !text-gray-400 !uppercase !tracking-wider !py-4 !px-6"
+							>
+								Name
+							</th>
+							<th
+								class="!text-xs !font-semibold !text-gray-400 !uppercase !tracking-wider !py-4 !px-6"
+							>
+								Phone
+							</th>
+							<th
+								class="!text-xs !font-semibold !text-gray-400 !uppercase !tracking-wider !py-4 !px-6"
+							>
+								Gender
+							</th>
+							<th
+								class="!text-xs !font-semibold !text-gray-400 !uppercase !tracking-wider !py-4 !px-6"
+							>
+								Date of Birth
+							</th>
+							<th
+								class="!text-xs !font-semibold !text-gray-400 !uppercase !tracking-wider !py-4 !px-6"
+							>
+								Status
+							</th>
+							<th
+								class="!text-xs !font-semibold !text-gray-400 !uppercase !tracking-wider !py-4 !px-6"
+							>
+								Services
+							</th>
+						</tr>
+					</ng-template>
+					<ng-template #body let-staff>
+						<tr class="!border-b border-gray-100 hover:bg-gray-50 transition-colors">
+							<td class="!py-5 !px-6">
+								<div class="flex items-center gap-4">
+									<div
+										class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 shrink-0"
+									>
+										<i class="pi pi-user text-gray-500"></i>
+									</div>
+									<span class="text-sm font-semibold text-gray-900"
+										>{{ staff.firstName }} {{ staff.lastName }}</span
+									>
+								</div>
+							</td>
+							<td class="!py-5 !px-6">
+								<span class="text-sm text-gray-600">{{ staff.phoneNumber || '—' }}</span>
+							</td>
+							<td class="!py-5 !px-6">
+								<span class="text-sm text-gray-600">{{ staff.gender || '—' }}</span>
+							</td>
+							<td class="!py-5 !px-6">
+								<span class="text-sm text-gray-600">{{
+									staff.dateOfBirth | date: 'mediumDate'
+								}}</span>
+							</td>
+							<td class="!py-5 !px-6">
+								<p-tag
+									[value]="getStatusInfo(staff.status).label"
+									[severity]="getStatusInfo(staff.status).severity"
+									[rounded]="true"
+									styleClass="!text-xs !font-bold"
+								/>
+							</td>
+							<td class="!py-5 !px-6">
+								<div class="flex flex-wrap items-center gap-1.5">
+									@for (svc of getStaffServices(staff.id); track svc.id) {
+										<p-tag
+											[value]="svc.name"
+											[rounded]="false"
+											severity="info"
+											styleClass="!text-xs !bg-primary !border-primary !text-white"
+										/>
+									}
+									<button
+										type="button"
+										class="w-7 h-7 flex items-center justify-center rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+										title="Add service"
+										(click)="openAssignDialog(staff.id, staff.firstName + ' ' + staff.lastName)"
+									>
+										<i class="pi pi-plus text-xs"></i>
+									</button>
+								</div>
+							</td>
+						</tr>
+					</ng-template>
+					<ng-template #emptymessage>
+						<tr>
+							<td colspan="5" class="!text-center !py-16">
+								<div class="flex flex-col items-center gap-3">
+									<div class="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100">
+										<i class="pi pi-users text-gray-400"></i>
+									</div>
+									<span class="text-sm text-gray-500">No staff found in this branch</span>
+								</div>
+							</td>
+						</tr>
+					</ng-template>
+				</p-table>
+			</div>
+
+			<!-- Paginator -->
+			<div class="flex items-center justify-between px-6 py-4 border-t border-gray-100 shrink-0">
+				<span class="text-sm text-gray-500">
+					Showing {{ firstItemIndex() }} to {{ lastItemIndex() }} of {{ totalCount() }} staff
+				</span>
+				<div class="flex items-center gap-1.5">
+					<button
+						type="button"
+						class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors border border-gray-200"
+						[class.pointer-events-none]="!hasPreviousPage()"
+						[class.text-gray-300]="!hasPreviousPage()"
+						[class.text-gray-600]="hasPreviousPage()"
+						[class.hover:bg-gray-50]="hasPreviousPage()"
+						(click)="onPageChange(currentPage() - 1)"
+					>
+						<i class="pi pi-chevron-left text-xs"></i>
+					</button>
+					@for (p of visiblePages(); track p) {
+						<button
+							type="button"
+							class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-semibold transition-colors"
+							[class.bg-primary]="p === currentPage()"
+							[class.text-white]="p === currentPage()"
+							[class.hover:bg-gray-50]="p !== currentPage()"
+							[class.text-gray-600]="p !== currentPage()"
+							(click)="onPageChange(p)"
+						>
+							{{ p }}
+						</button>
+					}
+					<button
+						type="button"
+						class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors border border-gray-200"
+						[class.pointer-events-none]="!hasNextPage()"
+						[class.text-gray-300]="!hasNextPage()"
+						[class.text-gray-600]="hasNextPage()"
+						[class.hover:bg-gray-50]="hasNextPage()"
+						(click)="onPageChange(currentPage() + 1)"
+					>
+						<i class="pi pi-chevron-right text-xs"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Assign Services Dialog -->
+<p-dialog
+	[(visible)]="isAssignDialogVisible"
+	[header]="'Assign Services to ' + selectedStaffName()"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="service-dialog"
+	[closeOnEscape]="!isSubmitting()"
+	[closable]="!isSubmitting()"
+>
+	<div class="flex flex-col gap-5 py-2">
+		<p class="text-sm text-gray-500">
+			Select services to assign to this staff member. Checking adds the service. Unchecking removes
+			it.
+		</p>
+
+		<div class="space-y-1.5">
+			<label
+				class="block text-[11px] font-extrabold text-gray-600 tracking-wider"
+				for="assign-services"
+			>
+				SERVICES
+			</label>
+			<p-multi-select
+				id="assign-services"
+				[options]="branchServices()"
+				[(ngModel)]="selectedServiceIds"
+				optionLabel="name"
+				optionValue="id"
+				placeholder="Select services"
+				styleClass="w-full"
+				class="w-full"
+				display="chip"
+				[appendTo]="'body'"
+			>
+				<ng-template let-svc pTemplate="item">
+					<div class="flex items-center gap-2">
+						<span>{{ svc.name }}</span>
+						<span class="text-xs text-gray-400"
+							>— {{ svc.durationMinutes }} min, {{ svc.cost }} {{ svc.currency }}</span
+						>
+					</div>
+				</ng-template>
+			</p-multi-select>
+		</div>
+	</div>
+
+	<ng-template #footer>
+		<div class="flex justify-end gap-2">
+			<p-button
+				label="Cancel"
+				[text]="true"
+				[disabled]="isSubmitting()"
+				(click)="isAssignDialogVisible.set(false)"
+			/>
+			<p-button
+				label="Save"
+				styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				[loading]="isSubmitting()"
+				[disabled]="isSubmitting()"
+				(click)="onSubmitAssign()"
+			/>
+		</div>
+	</ng-template>
+</p-dialog>

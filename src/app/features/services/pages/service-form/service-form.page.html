@@ -1,0 +1,412 @@
+<div class="flex flex-col h-full">
+	<p-toast />
+	<!-- Top Navbar -->
+	<div class="flex items-center justify-between bg-white px-6 py-4 shadow-sm shrink-0">
+		<div class="flex items-center gap-3">
+			<p-button
+				icon="pi pi-arrow-left"
+				[rounded]="true"
+				[text]="true"
+				(click)="goBack()"
+			/>
+			<h1 class="text-xl font-bold text-gray-900">
+				Form Builder
+				@if (hasForm()) {
+					<span class="text-gray-400 font-normal">({{ formName.value }})</span>
+				}
+			</h1>
+		</div>
+		@if (hasForm()) {
+			<div class="flex items-center gap-2">
+				<p-button
+					icon="pi pi-trash"
+					[rounded]="true"
+					[text]="true"
+					styleClass="!text-red-500 hover:!bg-red-50"
+					[loading]="isSubmitting()"
+					[disabled]="isSubmitting()"
+					(click)="deleteForm()"
+				/>
+				<p-button
+					label="Save"
+					icon="pi pi-check"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					[loading]="isSubmitting()"
+					[disabled]="isSubmitting()"
+					(click)="updateForm()"
+				/>
+			</div>
+		} @else {
+			<p-button
+				label="Create"
+				icon="pi pi-check"
+				styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				[loading]="isSubmitting()"
+				[disabled]="isSubmitting() || formName.invalid"
+				(click)="createForm()"
+			/>
+		}
+	</div>
+
+	<!-- Main Content -->
+	<div class="flex-1 overflow-auto p-6">
+		<div class="max-w-4xl mx-auto">
+		<!-- Form Name -->
+		@if (!hasForm()) {
+			<div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider mb-2" for="form-name">
+					FORM NAME
+				</label>
+				<input
+					id="form-name"
+					pInputText
+					type="text"
+					class="w-full"
+					placeholder="e.g. Patient Registration"
+					[formControl]="formName"
+				/>
+			</div>
+		}
+
+			<!-- Fields Section -->
+			<div class="bg-white rounded-2xl shadow-sm p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h2 class="text-lg font-semibold text-gray-900">Fields</h2>
+					<p-button
+						label="Add Field"
+						icon="pi pi-plus"
+						size="small"
+						styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+						(click)="openAddFieldDialog()"
+					/>
+				</div>
+
+				@if (fields().length === 0) {
+					<div class="flex flex-col items-center justify-center py-12 text-gray-400">
+						<i class="pi pi-list text-4xl mb-3"></i>
+						<span class="text-sm">No fields yet. Click "Add Field" to start building your form.</span>
+					</div>
+				} @else {
+					<div
+						cdkDropList
+						(cdkDropListDropped)="onDrop($event)"
+						class="flex flex-col gap-2"
+					>
+						@for (field of fields(); track field.name; let i = $index) {
+							<div
+								cdkDrag
+								class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 cursor-pointer hover:border-primary transition-colors"
+								[class.border-primary]="selectedIndex() === i"
+								[class.bg-primary-50]="selectedIndex() === i"
+								(click)="selectField(i)"
+							>
+								<div cdkDragHandle class="cursor-grab text-gray-400 hover:text-gray-600">
+									<i class="pi pi-bars"></i>
+								</div>
+								<div class="flex-1 min-w-0">
+									<div class="flex items-center gap-2">
+										<span class="text-sm font-semibold text-gray-900">{{ field.label }}</span>
+										<span class="text-[10px] font-bold text-gray-400 uppercase">{{ field.type }}</span>
+										@if (field.required) {
+											<span class="text-[10px] font-bold text-red-500">Required</span>
+										}
+									</div>
+									<span class="text-xs text-gray-500">{{ field.name }}</span>
+								</div>
+								<p-button
+									icon="pi pi-trash"
+									[rounded]="true"
+									[text]="true"
+									size="small"
+									styleClass="!text-red-500 hover:!bg-red-50"
+									(click)="deleteField(i); $event.stopPropagation()"
+								/>
+							</div>
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Field Editor -->
+			@if (selectedIndex() !== null) {
+				<div class="bg-white rounded-2xl shadow-sm p-6 mt-6">
+					<h2 class="text-lg font-semibold text-gray-900 mb-4">Edit Field</h2>
+					<div class="grid grid-cols-2 gap-4">
+						<div class="space-y-1.5">
+							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="edit-field-label">
+								LABEL
+							</label>
+							<input
+								id="edit-field-label"
+								pInputText
+								type="text"
+								class="w-full"
+								placeholder="e.g. Full Name"
+								[formControl]="editFieldLabel"
+							/>
+						</div>
+						<div class="space-y-1.5">
+							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="edit-field-type">
+								TYPE
+							</label>
+							<p-select
+								id="edit-field-type"
+								[options]="fieldTypes"
+								optionLabel="label"
+								optionValue="value"
+								class="w-full"
+								[formControl]="editFieldTypeCtrl"
+								(ngModelChange)="onEditFieldTypeChange()"
+								[appendTo]="'body'"
+							/>
+						</div>
+						<div class="space-y-1.5">
+							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">&nbsp;</label>
+							<div class="flex items-center gap-2 h-[38px]">
+								<p-checkbox
+									[formControl]="editFieldRequired"
+									[binary]="true"
+									inputId="edit-field-required"
+								/>
+								<label for="edit-field-required" class="text-sm text-gray-700">Required</label>
+							</div>
+						</div>
+					</div>
+
+					<!-- Options for Select -->
+					@if (selectedFieldType === 'select') {
+						<div class="mt-4 space-y-2">
+							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+								OPTIONS
+							</label>
+							@for (optCtrl of optionsArray.controls; track $index; let i = $index) {
+								<div class="flex items-center gap-2">
+									<input
+										pInputText
+										type="text"
+										class="flex-1"
+										placeholder="Option value"
+										[formControl]="optCtrl"
+									/>
+									<p-button
+										icon="pi pi-times"
+										[rounded]="true"
+										[text]="true"
+										size="small"
+										styleClass="!text-red-500"
+										(click)="removeOption(i)"
+									/>
+								</div>
+							}
+							<p-button
+								label="Add Option"
+								icon="pi pi-plus"
+								[text]="true"
+								size="small"
+								styleClass="!text-primary"
+								(click)="addOption()"
+							/>
+						</div>
+					}
+
+					<!-- Accept for File -->
+					@if (selectedFieldType === 'file') {
+						<div class="mt-4 space-y-2">
+							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+								ACCEPTED FILE TYPES
+							</label>
+							@for (accCtrl of acceptArray.controls; track $index; let i = $index) {
+								<div class="flex items-center gap-2">
+									<input
+										pInputText
+										type="text"
+										class="flex-1"
+										placeholder="e.g. .pdf, .jpg, .png"
+										[formControl]="accCtrl"
+									/>
+									<p-button
+										icon="pi pi-times"
+										[rounded]="true"
+										[text]="true"
+										size="small"
+										styleClass="!text-red-500"
+										(click)="removeAccept(i)"
+									/>
+								</div>
+							}
+							<p-button
+								label="Add Accept Type"
+								icon="pi pi-plus"
+								[text]="true"
+								size="small"
+								styleClass="!text-primary"
+								(click)="addAccept()"
+							/>
+						</div>
+					}
+
+					<div class="flex justify-end mt-4 pt-4 border-t border-gray-100">
+						<p-button
+							label="Update Field"
+							icon="pi pi-check"
+							styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+							[disabled]="editFieldForm.invalid"
+							(click)="saveEditField()"
+						/>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+<!-- Add Field Dialog -->
+<p-dialog
+	[(visible)]="isAddFieldVisible"
+	header="Add Field"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="service-dialog"
+>
+	<div class="flex flex-col gap-4 py-2">
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="new-field-name">
+				FIELD NAME
+			</label>
+			<input
+				id="new-field-name"
+				pInputText
+				type="text"
+				class="w-full"
+				placeholder="e.g. full_name"
+				[formControl]="newFieldName"
+			/>
+			<span class="text-[10px] text-gray-400">Letters, numbers, and underscores only</span>
+		</div>
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="new-field-label">
+				LABEL
+			</label>
+			<input
+				id="new-field-label"
+				pInputText
+				type="text"
+				class="w-full"
+				placeholder="e.g. Full Name"
+				[formControl]="newFieldLabel"
+			/>
+		</div>
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="new-field-type">
+				TYPE
+			</label>
+			<p-select
+				id="new-field-type"
+				[options]="fieldTypes"
+				optionLabel="label"
+				optionValue="value"
+				class="w-full"
+				[formControl]="newFieldTypeCtrl"
+				(ngModelChange)="onAddFieldTypeChange()"
+				[appendTo]="'body'"
+			/>
+		</div>
+		<div class="flex items-center gap-2">
+			<p-checkbox
+				[formControl]="newFieldRequired"
+				[binary]="true"
+				inputId="new-field-required"
+			/>
+			<label for="new-field-required" class="text-sm text-gray-700">Required</label>
+		</div>
+
+		<!-- Options for Select -->
+		@if (newFieldType === 'select') {
+			<div class="space-y-2">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+					OPTIONS
+				</label>
+				@for (optCtrl of optionsArray.controls; track $index; let i = $index) {
+					<div class="flex items-center gap-2">
+						<input
+							pInputText
+							type="text"
+							class="flex-1"
+							placeholder="Option value"
+							[formControl]="optCtrl"
+						/>
+						<p-button
+							icon="pi pi-times"
+							[rounded]="true"
+							[text]="true"
+							size="small"
+							styleClass="!text-red-500"
+							(click)="removeOption(i)"
+						/>
+					</div>
+				}
+				<p-button
+					label="Add Option"
+					icon="pi pi-plus"
+					[text]="true"
+					size="small"
+					styleClass="!text-primary"
+					(click)="addOption()"
+				/>
+			</div>
+		}
+
+		<!-- Accept for File -->
+		@if (newFieldType === 'file') {
+			<div class="space-y-2">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+					ACCEPTED FILE TYPES
+				</label>
+				@for (accCtrl of acceptArray.controls; track $index; let i = $index) {
+					<div class="flex items-center gap-2">
+						<input
+							pInputText
+							type="text"
+							class="flex-1"
+							placeholder="e.g. .pdf, .jpg, .png"
+							[formControl]="accCtrl"
+						/>
+						<p-button
+							icon="pi pi-times"
+							[rounded]="true"
+							[text]="true"
+							size="small"
+							styleClass="!text-red-500"
+							(click)="removeAccept(i)"
+						/>
+					</div>
+				}
+				<p-button
+					label="Add Accept Type"
+					icon="pi pi-plus"
+					[text]="true"
+					size="small"
+					styleClass="!text-primary"
+					(click)="addAccept()"
+				/>
+			</div>
+		}
+	</div>
+
+	<ng-template #footer>
+		<div class="flex justify-end gap-2">
+			<p-button
+				label="Cancel"
+				[text]="true"
+				(click)="isAddFieldVisible.set(false)"
+			/>
+			<p-button
+				label="Add"
+				styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				[disabled]="newFieldForm.invalid"
+				(click)="submitAddField()"
+			/>
+		</div>
+	</ng-template>
+</p-dialog>

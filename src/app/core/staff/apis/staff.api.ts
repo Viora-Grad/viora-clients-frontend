@@ -20,17 +20,35 @@ export interface UpdateStaffRolesRequest {
 	roleIds: string[];
 }
 
+export interface UpdateStaffServicesRequest {
+	serviceIds: string[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class StaffApi {
 	private readonly _http = inject(HttpClient);
 
-	public getStaff(
-		organizationId: string,
+	public getStaff(organizationId: string, page = 1, pageSize = 10): Observable<StaffListResponse> {
+		return this._http.get<StaffListResponse>(`${environment.apiBaseUrl}/Staffs`, {
+			params: {
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				OrganizationId: organizationId,
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				Page: page.toString(),
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				PageSize: pageSize.toString(),
+			},
+		});
+	}
+
+	public getStaffByBranch(
+		branchId: string,
 		page = 1,
 		pageSize = 10,
 	): Observable<StaffListResponse> {
 		return this._http.get<StaffListResponse>(`${environment.apiBaseUrl}/Staffs`, {
-			params: { organizationId, page: page.toString(), pageSize: pageSize.toString() },
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			params: { BranchIds: branchId, Page: page.toString(), PageSize: pageSize.toString() },
 		});
 	}
 
@@ -54,5 +72,9 @@ export class StaffApi {
 
 	public updateStaffRoles(id: string, request: UpdateStaffRolesRequest): Observable<unknown> {
 		return this._http.patch(`${environment.apiBaseUrl}/Staffs/${id}/role`, request);
+	}
+
+	public updateStaffServices(id: string, request: UpdateStaffServicesRequest): Observable<unknown> {
+		return this._http.patch(`${environment.apiBaseUrl}/Staffs/${id}/services`, request);
 	}
 }
