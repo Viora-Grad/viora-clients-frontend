@@ -101,6 +101,63 @@ export const routes: Routes = [
 						loadComponent: () =>
 							import('./features/profile/pages/profile/profile.page').then((m) => m.ProfilePage),
 					},
+				{
+					path: 'branch-management',
+					children: [
+						{
+							path: '',
+							redirectTo: 'overview',
+							pathMatch: 'full',
+						},
+						{
+							path: 'overview',
+							loadComponent: () =>
+								import('./features/home/pages/home/home.page').then((m) => m.HomePage),
+						},
+					{
+						path: 'schedule',
+						loadComponent: () =>
+							import('./features/schedule/pages/schedule/schedule.page').then(
+								(m) => m.SchedulePage,
+							),
+					},
+					{
+						path: 'appointments',
+						loadComponent: () =>
+							import('./features/appointments/pages/appointments/appointments.page').then(
+								(m) => m.AppointmentsPage,
+							),
+					},
+					{
+						path: 'services',
+						loadComponent: () =>
+							import('./features/services/pages/services/services.page').then(
+								(m) => m.ServicesPage,
+							),
+					},
+					{
+						path: 'services/:id/form',
+						loadComponent: () =>
+							import('./features/services/pages/service-form/service-form.page').then(
+								(m) => m.ServiceFormPage,
+							),
+					},
+					{
+						path: 'staffs',
+						loadComponent: () =>
+							import('./features/staff/pages/branch-staff/branch-staff.page').then(
+								(m) => m.BranchStaffPage,
+							),
+					},
+					{
+						path: 'wallet',
+						loadComponent: () =>
+							import('./features/wallet/pages/wallet/wallet.page').then(
+								(m) => m.WalletPage,
+							),
+					},
+				],
+			},
 				],
 			},
 		],

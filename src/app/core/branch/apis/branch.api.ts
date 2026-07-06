@@ -35,8 +35,8 @@ export class BranchApi {
 		});
 	}
 
-	public createBranch(request: CreateBranchRequest): Observable<unknown> {
-		return this._http.post(`${environment.apiBaseUrl}/Branches`, request);
+	public createBranch(request: CreateBranchRequest): Observable<string> {
+		return this._http.post<string>(`${environment.apiBaseUrl}/Branches`, request);
 	}
 
 	public getOrganizationServices(organizationId: string): Observable<string[]> {

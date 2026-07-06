@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { switchMap } from 'rxjs';
 import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { InputText } from 'primeng/inputtext';
@@ -11,6 +12,7 @@ import { MessageService } from 'primeng/api';
 import { BranchApi } from '../../../../core/branch/apis/branch.api';
 import { Country } from '../../../../core/branch/models/country.model';
 import { TenantStore } from '../../../../core/tenant/stores/tenant.store';
+import { WalletApi } from '../../../wallet/apis/wallet.api';
 
 function requiredValidator(): ValidatorFn {
 	return (control: AbstractControl): ValidationErrors | null => Validators.required(control);
@@ -26,6 +28,7 @@ function requiredValidator(): ValidatorFn {
 export class CreateBranchPage implements OnInit {
 	private readonly _formBuilder = inject(NonNullableFormBuilder);
 	private readonly _branchApi = inject(BranchApi);
+	private readonly _walletApi = inject(WalletApi);
 	private readonly _tenantStore = inject(TenantStore);
 	private readonly _router = inject(Router);
 	private readonly _location = inject(Location);
@@ -88,7 +91,9 @@ export class CreateBranchPage implements OnInit {
 			contactEmail: contactEmail || '',
 			servicesProvided: selectedServices,
 			timeZoneId: 'utc',
-		}).subscribe({
+		}).pipe(
+			switchMap((branchId) => this._walletApi.createBranchWallet(branchId)),
+		).subscribe({
 			next: () => {
 				this._messageService.add({
 					severity: 'success',
