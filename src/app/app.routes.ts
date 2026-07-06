@@ -142,15 +142,22 @@ export const routes: Routes = [
 								(m) => m.ServiceFormPage,
 							),
 					},
-						{
-							path: 'staffs',
-							loadComponent: () =>
-								import('./features/staff/pages/branch-staff/branch-staff.page').then(
-									(m) => m.BranchStaffPage,
-								),
-						},
-					],
-				},
+					{
+						path: 'staffs',
+						loadComponent: () =>
+							import('./features/staff/pages/branch-staff/branch-staff.page').then(
+								(m) => m.BranchStaffPage,
+							),
+					},
+					{
+						path: 'wallet',
+						loadComponent: () =>
+							import('./features/wallet/pages/wallet/wallet.page').then(
+								(m) => m.WalletPage,
+							),
+					},
+				],
+			},
 				],
 			},
 		],
