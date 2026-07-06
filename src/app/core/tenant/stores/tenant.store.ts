@@ -6,6 +6,7 @@ import { TenantService } from '../services/tenant.service';
 interface TenantState {
 	organizationId: string | null;
 	slug: string | null;
+	joinedOnUtc: string | null;
 	loaded: boolean;
 	error: string | null;
 }
@@ -13,6 +14,7 @@ interface TenantState {
 const initialState: TenantState = {
 	organizationId: null,
 	slug: null,
+	joinedOnUtc: null,
 	loaded: false,
 	error: null,
 };
@@ -35,6 +37,7 @@ export const TenantStore = signalStore(
 					const response = await firstValueFrom(tenantService.resolveOrganization(slug));
 					patchState(store, {
 						organizationId: response.id,
+						joinedOnUtc: response.joinedOnUtc,
 						loaded: true,
 					});
 					return true;
