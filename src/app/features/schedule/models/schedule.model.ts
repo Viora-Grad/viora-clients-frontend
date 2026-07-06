@@ -4,6 +4,7 @@ export interface Schedule {
 }
 
 export interface Shift {
+	shiftId: string;
 	staffId: string;
 	startTime: string;
 	endTime: string;

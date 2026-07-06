@@ -65,7 +65,7 @@
 										<p class="text-xs text-gray-400">No shifts</p>
 									</div>
 								} @else {
-									@for (shift of schedule.shifts; track shift.staffId + shift.startTime) {
+									@for (shift of schedule.shifts; track shift.shiftId) {
 										<div class="group bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-colors">
 											<div class="flex items-center gap-2 mb-1.5">
 												<div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -87,7 +87,7 @@
 												<button
 													type="button"
 													class="text-[10px] text-gray-400 hover:text-amber-600 transition-colors cursor-pointer"
-													(click)="openCancelShiftDialog(shift.staffId + '-' + shift.startTime, shift.staffId, day)"
+													(click)="openCancelShiftDialog(shift.shiftId, shift.staffId, day)"
 													title="Cancel for date"
 												>
 													<i class="pi pi-ban"></i>
@@ -95,7 +95,7 @@
 												<button
 													type="button"
 													class="text-[10px] text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-													(click)="openDeleteShiftDialog(shift.staffId + '-' + shift.startTime, day, shift.staffId)"
+													(click)="openDeleteShiftDialog(shift.shiftId, day, shift.staffId)"
 													title="Delete permanently"
 												>
 													<i class="pi pi-trash"></i>
