@@ -78,6 +78,13 @@ export const routes: Routes = [
 							),
 					},
 					{
+						path: 'staffs/:id',
+						loadComponent: () =>
+							import('./features/staff/pages/staff-details/staff-details.page').then(
+								(m) => m.StaffDetailsPage,
+							),
+					},
+					{
 						path: 'roles',
 						loadComponent: () =>
 							import('./features/roles/pages/roles/roles.page').then((m) => m.RolesPage),
@@ -99,7 +106,71 @@ export const routes: Routes = [
 						loadComponent: () =>
 							import('./features/vivi-marketing/pages/vivi-marketing/vivi-marketing.page').then(
 								(m) => m.ViviMarketingPage,
-							),
+							),},{
+						path: 'branch-management',
+						children: [
+							{
+								path: '',
+								redirectTo: 'overview',
+								pathMatch: 'full',
+							},
+							{
+								path: 'overview',
+								loadComponent: () =>
+									import('./features/home/pages/home/home.page').then((m) => m.HomePage),
+							},
+							{
+								path: 'schedule',
+								loadComponent: () =>
+									import('./features/schedule/pages/schedule/schedule.page').then(
+										(m) => m.SchedulePage,
+									),
+							},
+							{
+								path: 'appointments',
+								loadComponent: () =>
+									import('./features/appointments/pages/appointments/appointments.page').then(
+										(m) => m.AppointmentsPage,
+									),
+							},
+							{
+								path: 'services',
+								loadComponent: () =>
+									import('./features/services/pages/services/services.page').then(
+										(m) => m.ServicesPage,
+									),
+							},
+							{
+								path: 'services/:id/form',
+								loadComponent: () =>
+									import('./features/services/pages/service-form/service-form.page').then(
+										(m) => m.ServiceFormPage,
+									),
+							},
+							{
+								path: 'staffs',
+								loadComponent: () =>
+									import('./features/staff/pages/branch-staff/branch-staff.page').then(
+										(m) => m.BranchStaffPage,
+									),
+							},
+							{
+								path: 'wallet',
+								loadComponent: () =>
+									import('./features/wallet/pages/wallet/wallet.page').then(
+										(m) => m.WalletPage,
+									),
+							},
+						],
+					},
+					{
+						path: 'organization',
+						loadComponent: () =>
+							import('./features/organization/pages/organization/organization.page').then((m) => m.OrganizationPage),
+					},
+					{
+						path: 'organization/edit',
+						loadComponent: () => import('./features/organization/pages/organizationEdit/organizationEdit.page').then(m => m.OrganizationEditPage),
 					},
 				],
 			},

@@ -1,0 +1,7 @@
+.wallet-balance-card {
+	background: linear-gradient(135deg, #6056f0 0%, #4338ca 50%, #3730a3 100%);
+}
+
+:host ::ng-deep .checkout-dialog {
+	width: 480px;
+}

@@ -1,0 +1,410 @@
+<div class="flex flex-col h-full">
+	<p-toast />
+	<!-- Top Navbar -->
+	<div class="flex items-center justify-between bg-white px-6 py-4 shadow-sm shrink-0">
+		<h1 class="text-xl font-bold text-gray-900">Services Management</h1>
+		<p-button
+			label="Add Service"
+			icon="pi pi-plus"
+			[raised]="true"
+			styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+			(click)="openCreateDialog()"
+		/>
+	</div>
+
+	<!-- Main Content -->
+	<div class="flex-1 overflow-auto p-6">
+		@if (servicesService.isLoading()) {
+			<div class="flex items-center justify-center py-20">
+				<i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+			</div>
+		} @else if (servicesService.services().length === 0) {
+			<div class="flex flex-col items-center justify-center py-20 gap-4">
+				<div class="flex items-center justify-center w-16 h-16 rounded-full bg-gray-100">
+					<i class="pi pi-briefcase text-2xl text-gray-400"></i>
+				</div>
+				<p class="text-sm text-gray-500">No services found</p>
+				<p-button
+					label="Add Service"
+					icon="pi pi-plus"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					(click)="openCreateDialog()"
+				/>
+			</div>
+		} @else {
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				@for (service of servicesService.services(); track service.id) {
+					<div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-4">
+						<!-- Header -->
+						<div class="flex items-start justify-between gap-3">
+							<h3 class="text-base font-bold text-gray-900">{{ service.name }}</h3>
+							<p-tag
+								[value]="getStatusInfo(service.status).label"
+								[severity]="getStatusInfo(service.status).severity"
+								[rounded]="true"
+								styleClass="!text-xs !font-bold shrink-0"
+							/>
+						</div>
+
+						<!-- Description -->
+						@if (service.description) {
+							<p class="text-sm text-gray-500 line-clamp-2">{{ service.description }}</p>
+						}
+
+						<!-- Details -->
+						<div class="flex items-center flex-wrap gap-3 text-sm text-gray-600">
+							<div class="flex items-center gap-1.5">
+								<i class="pi pi-clock text-xs text-gray-400"></i>
+								<span>{{ service.durationMinutes }} min</span>
+							</div>
+							<div class="flex items-center gap-1.5">
+								<i class="pi pi-dollar text-xs text-gray-400"></i>
+								<span class="font-semibold text-gray-900">{{ service.cost }} {{ service.currency }}</span>
+							</div>
+							<p-tag
+								[value]="service.serviceType"
+								[rounded]="true"
+								styleClass="!text-xs"
+							/>
+						</div>
+
+						<!-- Discount -->
+						@if (service.discount) {
+							<div class="bg-amber-50 rounded-xl p-3 flex items-center gap-2">
+								<i class="pi pi-tag text-amber-600 text-sm shrink-0"></i>
+								<div class="flex flex-col min-w-0">
+									<span class="text-sm font-semibold text-amber-700">
+										{{ service.discount.percentageOutOf100 }}% off
+									</span>
+									<span class="text-xs text-amber-600 truncate">
+										{{ service.discount.reason }}
+									</span>
+								</div>
+							</div>
+						}
+
+						<!-- Actions -->
+						<div class="flex items-center gap-2 pt-3 mt-auto border-t border-gray-100">
+							<p-button
+								icon="pi pi-pencil"
+								size="small"
+								[text]="true"
+								styleClass="!text-gray-600 hover:!text-primary"
+								(click)="openEditDialog(service)"
+							/>
+							<p-button
+								icon="pi pi-tag"
+								size="small"
+								[text]="true"
+								styleClass="!text-gray-600 hover:!text-amber-600"
+								(click)="openDiscountDialog(service)"
+							/>
+							<p-button
+								icon="pi pi-list"
+								size="small"
+								[text]="true"
+								styleClass="!text-gray-600 hover:!text-green-600"
+								(click)="openFormBuilder(service.id)"
+							/>
+						</div>
+					</div>
+				}
+			</div>
+		}
+	</div>
+</div>
+
+<!-- Create Service Dialog -->
+<p-dialog
+	[(visible)]="isCreateDialogVisible"
+	header="Add Service"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="service-dialog"
+	[closeOnEscape]="!isSubmitting()"
+	[closable]="!isSubmitting()"
+>
+	<form [formGroup]="createForm" class="flex flex-col gap-5 py-2">
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="create-name">
+				NAME
+			</label>
+			<input
+				id="create-name"
+				type="text"
+				pInputText
+				formControlName="name"
+				placeholder="e.g. Haircut"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+			/>
+		</div>
+
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="create-description">
+				DESCRIPTION
+			</label>
+			<textarea
+				id="create-description"
+				pTextarea
+				formControlName="description"
+				placeholder="Describe the service"
+				rows="3"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all resize-none"
+			></textarea>
+		</div>
+
+		<div class="grid grid-cols-2 gap-4">
+			<div class="space-y-1.5">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="create-serviceType">
+					SERVICE TYPE
+				</label>
+				<p-select
+					id="create-serviceType"
+					formControlName="serviceType"
+					[options]="servicesService.serviceTypes()"
+					placeholder="Select type"
+					styleClass="w-full"
+					class="w-full"
+					[appendTo]="'body'"
+				/>
+			</div>
+
+			<div class="space-y-1.5">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="create-duration">
+					DURATION
+				</label>
+				<p-select
+					id="create-duration"
+					formControlName="durationInMinutes"
+					[options]="durationOptions"
+					optionLabel="label"
+					optionValue="value"
+					placeholder="Select duration"
+					styleClass="w-full"
+					class="w-full"
+					[appendTo]="'body'"
+				/>
+			</div>
+		</div>
+
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="create-cost">
+				COST (EGP)
+			</label>
+			<input
+				id="create-cost"
+				type="number"
+				pInputText
+				formControlName="costAmount"
+				placeholder="e.g. 150"
+				min="0"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+			/>
+		</div>
+	</form>
+
+	<ng-template #footer>
+		<div class="flex justify-end gap-2">
+			<p-button
+				label="Cancel"
+				[text]="true"
+				[disabled]="isSubmitting()"
+				(click)="isCreateDialogVisible.set(false)"
+			/>
+			<p-button
+				label="Create"
+				styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				[loading]="isSubmitting()"
+				[disabled]="createForm.invalid || isSubmitting()"
+				(click)="onSubmitCreate()"
+			/>
+		</div>
+	</ng-template>
+</p-dialog>
+
+<!-- Edit Service Dialog -->
+<p-dialog
+	[(visible)]="isEditDialogVisible"
+	header="Edit Service"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="service-dialog"
+	[closeOnEscape]="!isSubmitting()"
+	[closable]="!isSubmitting()"
+>
+	<form [formGroup]="editForm" class="flex flex-col gap-5 py-2">
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="edit-name">
+				NAME
+			</label>
+			<input
+				id="edit-name"
+				type="text"
+				pInputText
+				formControlName="name"
+				placeholder="e.g. Haircut"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+			/>
+		</div>
+
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="edit-description">
+				DESCRIPTION
+			</label>
+			<textarea
+				id="edit-description"
+				pTextarea
+				formControlName="description"
+				placeholder="Describe the service"
+				rows="3"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all resize-none"
+			></textarea>
+		</div>
+
+		<div class="grid grid-cols-2 gap-4">
+			<div class="space-y-1.5">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="edit-serviceType">
+					SERVICE TYPE
+				</label>
+				<p-select
+					id="edit-serviceType"
+					formControlName="serviceType"
+					[options]="servicesService.serviceTypes()"
+					placeholder="Select type"
+					styleClass="w-full"
+					class="w-full"
+					[appendTo]="'body'"
+				/>
+			</div>
+
+			<div class="space-y-1.5">
+				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="edit-duration">
+					DURATION
+				</label>
+				<p-select
+					id="edit-duration"
+					formControlName="durationInMinutes"
+					[options]="durationOptions"
+					optionLabel="label"
+					optionValue="value"
+					placeholder="Select duration"
+					styleClass="w-full"
+					class="w-full"
+					[appendTo]="'body'"
+				/>
+			</div>
+		</div>
+
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="edit-cost">
+				COST (EGP)
+			</label>
+			<input
+				id="edit-cost"
+				type="number"
+				pInputText
+				formControlName="costAmount"
+				placeholder="e.g. 150"
+				min="0"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+			/>
+		</div>
+	</form>
+
+	<ng-template #footer>
+		<div class="flex justify-end gap-2">
+			<p-button
+				label="Cancel"
+				[text]="true"
+				[disabled]="isSubmitting()"
+				(click)="isEditDialogVisible.set(false)"
+			/>
+			<p-button
+				label="Save"
+				styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				[loading]="isSubmitting()"
+				[disabled]="editForm.invalid || isSubmitting()"
+				(click)="onSubmitEdit()"
+			/>
+		</div>
+	</ng-template>
+</p-dialog>
+
+<!-- Add Discount Dialog -->
+<p-dialog
+	[(visible)]="isDiscountDialogVisible"
+	header="Add Discount"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="service-dialog"
+	[closeOnEscape]="!isSubmitting()"
+	[closable]="!isSubmitting()"
+>
+	<form [formGroup]="discountForm" class="flex flex-col gap-5 py-2">
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="discount-percentage">
+				DISCOUNT PERCENTAGE
+			</label>
+			<input
+				id="discount-percentage"
+				type="number"
+				pInputText
+				formControlName="discountOutOf100"
+				placeholder="e.g. 20"
+				min="0"
+				max="100"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+			/>
+		</div>
+
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="discount-reason">
+				REASON
+			</label>
+			<textarea
+				id="discount-reason"
+				pTextarea
+				formControlName="reason"
+				placeholder="e.g. Summer promotion"
+				rows="3"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all resize-none"
+			></textarea>
+		</div>
+
+		<div class="space-y-1.5">
+			<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider" for="discount-duration">
+				DURATION (DAYS)
+			</label>
+			<input
+				id="discount-duration"
+				type="number"
+				pInputText
+				formControlName="durationInDays"
+				placeholder="e.g. 30"
+				min="1"
+				class="w-full bg-[#FCF8FB] border border-transparent focus:border-purple-200 focus:bg-white focus:ring-2 focus:ring-purple-100 placeholder:text-gray-300 rounded-xl py-3 px-4 text-[15px] text-gray-700 font-medium outline-none transition-all"
+			/>
+		</div>
+	</form>
+
+	<ng-template #footer>
+		<div class="flex justify-end gap-2">
+			<p-button
+				label="Cancel"
+				[text]="true"
+				[disabled]="isSubmitting()"
+				(click)="isDiscountDialogVisible.set(false)"
+			/>
+			<p-button
+				label="Add Discount"
+				styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				[loading]="isSubmitting()"
+				[disabled]="discountForm.invalid || isSubmitting()"
+				(click)="onSubmitDiscount()"
+			/>
+		</div>
+	</ng-template>
+</p-dialog>

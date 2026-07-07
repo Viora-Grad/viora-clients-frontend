@@ -1,0 +1,251 @@
+@if (loading()) {
+
+<div class="flex justify-center items-center py-20">
+    <p-progress-spinner />
+</div>
+
+} @else {
+
+<div class="p-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1">
+            <div class="mx-5">
+                @if (logoUrl()) {
+                <!-- eslint-disable-next-line @angular-eslint/template/prefer-ngsrc -->
+                <img [src]="logoUrl()" width="50" height="50"
+                    alt="Organization Logo"
+                    class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
+                } @else {
+                <div
+                    class="w-10 h-10 rounded-lg flex items-center justify-center">
+                    <!-- <i class="pi pi-building text-gray-400 text-2xl"></i> -->
+                    <i class="pi pi-image text-gray-400 text-2xl"></i>
+                </div>
+                }
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">
+                    {{ organization()?.name }}
+                </h1>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-400">Joined {{
+                        organization()?.joinedOnUtc |date:'MMM d, yyyy'}}</span>
+                </div>
+            </div>
+        </div>
+
+        <p-button
+            label="Edit"
+            icon="pi pi-pencil"
+            (onClick)="edit()" />
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+
+        <!-- Left Column -->
+        <div class="flex flex-col gap-4">
+
+            <!-- Logo -->
+            <!-- <div class="border border-gray-200 rounded-lg p-5"> -->
+
+            <!-- <h2 class="section-title">
+                    <i class="pi pi-image"></i>
+                    Logo
+                </h2> -->
+
+            <!-- <div class="flex items-center gap-4 mt-4">
+
+                    
+
+                    <div> -->
+
+            <!-- <h3 class="text-lg font-semibold text-gray-900">
+                    {{ organization()?.name }}
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    {{ organization()?.about }}
+                </p> -->
+
+            <!-- </div> -->
+
+            <!-- Organization Details -->
+            <div class="border border-gray-200 rounded-lg p-5">
+
+                <h2 class="section-title">
+                    <i class="pi pi-building"></i>
+                    Organization Details
+                </h2>
+
+                <div class="grid gap-6 sm:grid-cols-2 mt-4">
+
+                    <div class="field">
+
+                        <label for="name" class="field-label">
+                            Name
+                        </label>
+
+                        <span class="info-value">
+                            {{ organization()?.name }}
+                        </span>
+
+                    </div>
+
+                    <div class="field">
+
+                        <label for="joined" class="field-label">
+                            Joined
+                        </label>
+
+                        <span class="info-value">
+                            {{ organization()?.joinedOnUtc | date:'mediumDate'}}
+                        </span>
+
+                    </div>
+
+                    <div class="field">
+
+                        <label for="country" class="field-label">
+                            Country
+                        </label>
+
+                        <span class="info-value">
+                            {{ organization()?.country }}
+                        </span>
+
+                    </div>
+
+                    <div class="field">
+
+                        <label for="countryCode" class="field-label">
+                            Country Code
+                        </label>
+
+                        <span class="info-value">
+                            {{ organization()?.countryCode }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="field mt-6">
+
+                    <label for="about" class="field-label">
+                        About
+                    </label>
+
+                    <p class="text-[15px] leading-7 text-gray-700">
+                        {{ organization()?.about }}
+                    </p>
+
+                </div>
+
+            </div>
+            <!-- Contact -->
+            <div class="border border-gray-200 rounded-lg p-5">
+
+                <h2 class="section-title">
+                    <i class="pi pi-envelope"></i>
+                    Contact
+                </h2>
+
+                <div class="grid gap-6 sm:grid-cols-2 mt-4">
+
+                    <div class="field">
+
+                        <label for="contactEmail" class="field-label">
+                            Email
+                        </label>
+
+                        <span class="info-value">
+                            {{ organization()?.contactEmail }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="flex flex-col gap-4">
+
+            <!-- Services -->
+            <div class="border border-gray-200 rounded-lg p-5">
+                <h2 class="section-title">
+                    <i class="pi pi-briefcase"></i>
+                    Services
+                </h2>
+
+                <div class="mt-4 flex flex-wrap gap-2">
+                    @for(service of organization()?.servicesProvided; track
+                    service){
+
+                    <p-chip
+                        [label]="service"
+                        Class="bg-[#201335]! text-white! rounded-lg! font-medium! text-[13px]!" />
+
+                    }
+                </div>
+
+                <div class="mt-6">
+                    <label for="ser" class="field-label">Service
+                        Description</label>
+
+                    <p class="mt-2 text-gray-700 leading-7">
+                        {{ organization()?.serviceDescription }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Branches -->
+            <!-- <div class="border border-gray-200 rounded-lg p-5">
+                <h2 class="section-title">
+                    <i class="pi pi-map-marker"></i>
+                    Branches
+                </h2>
+
+                @if (branches().length === 0) {
+
+                <p class="text-sm text-gray-400 text-center py-6">
+                    No branches available.
+                </p>
+
+                } @else {
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+
+                    @for(branch of branches(); track branch.id){
+
+                    <div
+                        class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="pi pi-map-marker text-[#201335]"></i>
+
+                            <span class="font-medium text-gray-800">
+                                {{ branch.address }}
+                            </span>
+                        </div>
+
+                        <p class="text-sm text-gray-500">
+                            Opened {{ branch.openedSinceUtc | date:'mediumDate'
+                            }}
+                        </p>
+
+                    </div>
+
+                    }
+
+                </div>
+
+                }
+            </div> -->
+        </div>
+    </div>
+
+</div>
+}

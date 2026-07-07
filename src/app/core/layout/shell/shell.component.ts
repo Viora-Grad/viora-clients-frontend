@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { BranchStore } from '../../branch/stores/branch.store';
 import { NavItem } from '../models/nav-item.model';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
@@ -11,7 +12,10 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 	styleUrl: './shell.component.css',
 })
 export class ShellComponent {
-	public readonly navItems = signal<NavItem[]>([
+	private readonly _branchStore = inject(BranchStore);
+	private readonly _router = inject(Router);
+
+	private readonly _organizationNavItems: NavItem[] = [
 		{ label: 'Overview', icon: 'pi pi-th-large', route: '/overview' },
 		{ label: 'Organization', icon: 'pi pi-sitemap', route: '/organization' },
 		{ label: 'Branches', icon: 'pi pi-building', route: '/branches' },
@@ -19,5 +23,32 @@ export class ShellComponent {
 		{ label: 'Roles', icon: 'pi pi-user-edit', route: '/roles' },
 		{ label: 'ViVi Marketing', icon: 'pi pi-microchip-ai', route: '/vivi' },
 		{ label: 'Billing', icon: 'pi pi-dollar', route: '/billing' },
-	]);
+	];
+
+	private readonly _branchNavItems: NavItem[] = [
+		{ label: 'Schedule', icon: 'pi pi-calendar', route: '/branch-management/schedule' },
+		{ label: 'Services', icon: 'pi pi-briefcase', route: '/branch-management/services' },
+		{ label: 'Staff', icon: 'pi pi-users', route: '/branch-management/staffs' },
+		{
+			label: 'Appointments',
+			icon: 'pi pi-calendar-clock',
+			route: '/branch-management/appointments',
+		},
+		{ label: 'Wallet', icon: 'pi pi-wallet', route: '/branch-management/wallet' },
+	];
+
+	public readonly navItems = computed(() =>
+		this._branchStore.isOrganizationLevel() ? this._organizationNavItems : this._branchNavItems,
+	);
+
+	public constructor() {
+		effect(() => {
+			const isOrgLevel = this._branchStore.isOrganizationLevel();
+			if (isOrgLevel) {
+				void this._router.navigate([this._organizationNavItems[0].route]);
+			} else {
+				void this._router.navigate([this._branchNavItems[0].route]);
+			}
+		});
+	}
 }

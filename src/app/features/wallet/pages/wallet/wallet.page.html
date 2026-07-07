@@ -1,0 +1,252 @@
+<div class="flex flex-col h-full">
+	<p-toast />
+	<!-- Top Navbar -->
+	<div class="flex items-center justify-between bg-white px-6 py-4 shadow-sm shrink-0">
+		<h1 class="text-xl font-bold text-gray-900">Wallet</h1>
+		<div class="flex items-center gap-3">
+			@if (noWallet()) {
+				<p-button
+					label="Create Wallet"
+					icon="pi pi-plus"
+					[loading]="isCreating()"
+					[disabled]="isCreating()"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					(click)="createWallet()"
+				/>
+			} @else if (wallet()) {
+				<p-button
+					label="Checkout"
+					icon="pi pi-arrow-right"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					(click)="openCheckoutDialog()"
+				/>
+			}
+		</div>
+	</div>
+
+	<!-- Scrollable Content -->
+	<div class="flex-1 overflow-y-auto">
+		<div class="p-6 space-y-6">
+			<!-- Loading -->
+			@if (isLoading()) {
+				<div class="flex items-center justify-center py-20">
+					<i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+				</div>
+			} @else if (noWallet()) {
+				<div class="flex flex-col items-center justify-center py-20 gap-4">
+					<div class="flex items-center justify-center w-16 h-16 rounded-full bg-gray-100">
+						<i class="pi pi-wallet text-2xl text-gray-400"></i>
+					</div>
+					<p class="text-gray-500">No wallet found for this branch</p>
+					<p-button
+						label="Create Wallet"
+						icon="pi pi-plus"
+						[loading]="isCreating()"
+						[disabled]="isCreating()"
+						styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+						(click)="createWallet()"
+					/>
+				</div>
+			} @else if (error()) {
+				<div class="flex flex-col items-center justify-center py-20 gap-4">
+					<i class="pi pi-exclamation-triangle text-3xl text-red-400"></i>
+					<p class="text-gray-500">{{ error() }}</p>
+				</div>
+			} @else if (wallet(); as w) {
+				<!-- Balance Card -->
+				<div class="wallet-balance-card rounded-2xl p-8 text-white">
+					<div class="flex items-start justify-between mb-6">
+						<div>
+							<p class="text-sm font-medium text-white/70 mb-1">Current Balance</p>
+							<div class="flex items-baseline gap-2">
+								<span class="text-4xl font-bold tracking-tight">{{ formattedBalance() }}</span>
+								<span class="text-lg font-medium text-white/80">{{ w.currency }}</span>
+							</div>
+						</div>
+						<span
+							class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white"
+						>
+							{{ w.walletType }} Wallet
+						</span>
+					</div>
+					<div class="flex items-center gap-8">
+						<div class="flex items-center gap-3">
+							<div class="bg-white/10 rounded-full p-2">
+								<i class="pi pi-arrow-down text-sm text-emerald-300"></i>
+							</div>
+							<div>
+								<p class="text-xs text-white/60">Total Credit</p>
+								<p class="text-sm font-semibold text-emerald-300">+{{ totalCredit() }}</p>
+							</div>
+						</div>
+						<div class="flex items-center gap-3">
+							<div class="bg-white/10 rounded-full p-2">
+								<i class="pi pi-arrow-up text-sm text-red-300"></i>
+							</div>
+							<div>
+								<p class="text-xs text-white/60">Total Debit</p>
+								<p class="text-sm font-semibold text-red-300">-{{ totalDebit() }}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Transactions Section -->
+				<div class="bg-white rounded-2xl shadow-sm">
+					<div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+						<h2 class="text-lg font-semibold text-gray-900">Transactions</h2>
+						<span class="text-sm text-gray-500">{{ transactionCount() }} transactions</span>
+					</div>
+
+					@if (w.transactions.length > 0) {
+						<div class="overflow-x-auto">
+							<table class="w-full">
+								<thead>
+									<tr class="border-b border-gray-100">
+										<th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider py-3 px-6">Type</th>
+										<th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider py-3 px-6">Purpose</th>
+										<th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider py-3 px-6">Amount</th>
+										<th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider py-3 px-6">Balance</th>
+										<th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider py-3 px-6">Description</th>
+										<th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider py-3 px-6">Reference</th>
+										<th class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider py-3 px-6">Date</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (tx of w.transactions; track trackByTransactionId($index, tx)) {
+										<tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+											<td class="py-3.5 px-6">
+												<p-tag
+													[value]="tx.type"
+													[severity]="getTypeSeverity(tx.type)"
+													[rounded]="true"
+													styleClass="!text-xs !font-bold"
+												/>
+											</td>
+											<td class="py-3.5 px-6">
+												<p-tag
+													[value]="tx.purpose"
+													[severity]="getPurposeSeverity(tx.purpose)"
+													[rounded]="true"
+													styleClass="!text-xs"
+												/>
+											</td>
+											<td class="py-3.5 px-6">
+												<span class="text-sm font-semibold" [class]="getAmountClass(tx)">
+													{{ getAmountDisplay(tx) }} {{ tx.currency }}
+												</span>
+											</td>
+											<td class="py-3.5 px-6">
+												<span class="text-sm text-gray-600">{{ formatRunningBalance(tx) }}</span>
+											</td>
+											<td class="py-3.5 px-6">
+												<span class="text-sm text-gray-600 max-w-[200px] truncate block">{{ tx.description }}</span>
+											</td>
+											<td class="py-3.5 px-6">
+												<span class="text-xs font-mono text-gray-500 bg-gray-50 px-2 py-1 rounded">{{ tx.referenceId }}</span>
+											</td>
+											<td class="py-3.5 px-6">
+												<div class="flex flex-col">
+													<span class="text-sm text-gray-900">{{ formatDate(tx.createdAtUtc) }}</span>
+													<span class="text-xs text-gray-500">{{ formatTime(tx.createdAtUtc) }}</span>
+												</div>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					} @else {
+						<div class="flex flex-col items-center justify-center py-16">
+							<div class="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+								<i class="pi pi-wallet text-gray-400"></i>
+							</div>
+							<span class="text-sm text-gray-500">No transactions yet</span>
+						</div>
+					}
+				</div>
+			}
+		</div>
+	</div>
+
+	<!-- Checkout Dialog -->
+	<p-dialog
+		header="Checkout"
+		[modal]="true"
+		[(visible)]="isCheckoutDialogVisible"
+		styleClass="checkout-dialog"
+	>
+		<form [formGroup]="checkoutForm" class="flex flex-col gap-4 w-96 mx-auto">
+			<div class="flex flex-col gap-1">
+				<label for="amount" class="text-sm font-medium text-gray-700">Amount</label>
+				<input
+					id="amount"
+					pInputText
+					type="number"
+					step="0.01"
+					min="0.01"
+					placeholder="0.00"
+					formControlName="amount"
+					class="w-full"
+				/>
+				@if (checkoutForm.controls.amount.invalid && checkoutForm.controls.amount.touched) {
+					<p class="text-xs text-red-500">Please enter a valid amount</p>
+				}
+			</div>
+			<div class="flex flex-col gap-1">
+				<label for="recipientName" class="text-sm font-medium text-gray-700">Recipient Name</label>
+				<input
+					id="recipientName"
+					pInputText
+					placeholder="Enter recipient name"
+					formControlName="recipientName"
+					class="w-full"
+				/>
+				@if (checkoutForm.controls.recipientName.invalid && checkoutForm.controls.recipientName.touched) {
+					<p class="text-xs text-red-500">Recipient name is required</p>
+				}
+			</div>
+			<div class="flex flex-col gap-1">
+				<label for="recipientBank" class="text-sm font-medium text-gray-700">Recipient Bank</label>
+				<input
+					id="recipientBank"
+					pInputText
+					placeholder="Enter bank name"
+					formControlName="recipientBank"
+					class="w-full"
+				/>
+				@if (checkoutForm.controls.recipientBank.invalid && checkoutForm.controls.recipientBank.touched) {
+					<p class="text-xs text-red-500">Recipient bank is required</p>
+				}
+			</div>
+			<div class="flex flex-col gap-1">
+				<label for="recipientNumber" class="text-sm font-medium text-gray-700">Recipient Number</label>
+				<input
+					id="recipientNumber"
+					pInputText
+					placeholder="Enter account number"
+					formControlName="recipientNumber"
+					class="w-full"
+				/>
+				@if (checkoutForm.controls.recipientNumber.invalid && checkoutForm.controls.recipientNumber.touched) {
+					<p class="text-xs text-red-500">Recipient number is required</p>
+				}
+			</div>
+			<div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+				<p-button
+					label="Cancel"
+					styleClass="p-button-text"
+					[disabled]="isCheckingOut()"
+					(click)="isCheckoutDialogVisible.set(false)"
+				/>
+				<p-button
+					label="Confirm"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					[loading]="isCheckingOut()"
+					[disabled]="isCheckingOut() || checkoutForm.invalid"
+					(click)="submitCheckout()"
+				/>
+			</div>
+		</form>
+	</p-dialog>
+</div>
