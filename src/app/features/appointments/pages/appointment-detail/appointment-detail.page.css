@@ -1,0 +1,4 @@
+:host ::ng-deep .create-rx-dialog {
+	width: 40rem;
+	max-width: 95vw;
+}

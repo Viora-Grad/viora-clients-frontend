@@ -106,7 +106,9 @@ export const routes: Routes = [
 						loadComponent: () =>
 							import('./features/vivi-marketing/pages/vivi-marketing/vivi-marketing.page').then(
 								(m) => m.ViviMarketingPage,
-							),},{
+							),
+					},
+					{
 						path: 'branch-management',
 						children: [
 							{
@@ -124,6 +126,27 @@ export const routes: Routes = [
 								loadComponent: () =>
 									import('./features/schedule/pages/schedule/schedule.page').then(
 										(m) => m.SchedulePage,
+									),
+							},
+							{
+								path: 'appointments/shift/:id',
+								loadComponent: () =>
+									import('./features/appointments/pages/shift-detail/shift-detail.page').then(
+										(m) => m.ShiftDetailPage,
+									),
+							},
+							{
+								path: 'appointments/:id/form-submission',
+								loadComponent: () =>
+									import('./features/form-submissions/pages/form-submission/form-submission.page').then(
+										(m) => m.FormSubmissionPage,
+									),
+							},
+							{
+								path: 'appointments/:id',
+								loadComponent: () =>
+									import('./features/appointments/pages/appointment-detail/appointment-detail.page').then(
+										(m) => m.AppointmentDetailPage,
 									),
 							},
 							{
@@ -157,20 +180,37 @@ export const routes: Routes = [
 							{
 								path: 'wallet',
 								loadComponent: () =>
-									import('./features/wallet/pages/wallet/wallet.page').then(
-										(m) => m.WalletPage,
-									),
+									import('./features/wallet/pages/wallet/wallet.page').then((m) => m.WalletPage),
 							},
 						],
 					},
 					{
 						path: 'organization',
 						loadComponent: () =>
-							import('./features/organization/pages/organization/organization.page').then((m) => m.OrganizationPage),
+							import('./features/organization/pages/organization/organization.page').then(
+								(m) => m.OrganizationPage,
+							),
 					},
 					{
 						path: 'organization/edit',
-						loadComponent: () => import('./features/organization/pages/organizationEdit/organizationEdit.page').then(m => m.OrganizationEditPage),
+						loadComponent: () =>
+							import('./features/organization/pages/organizationEdit/organizationEdit.page').then(
+								(m) => m.OrganizationEditPage,
+							),
+					},
+					{
+						path: 'prescriptions',
+						loadComponent: () =>
+							import('./features/prescriptions/pages/prescriptions/prescriptions.page').then(
+								(m) => m.PrescriptionsPage,
+							),
+					},
+					{
+						path: 'prescriptions/create',
+						loadComponent: () =>
+							import('./features/prescriptions/pages/create-prescription-template/create-prescription-template.page').then(
+								(m) => m.CreatePrescriptionTemplatePage,
+							),
 					},
 				],
 			},

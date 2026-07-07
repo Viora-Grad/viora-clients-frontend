@@ -25,7 +25,7 @@
 						<button
 							type="button"
 							class="flex-shrink-0 w-72 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 text-left hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
-							(click)="onShiftClick(shift.id)"
+							(click)="onShiftClick(shift)"
 						>
 							<div class="flex items-center gap-3 mb-4">
 								<div
@@ -61,6 +61,97 @@
 				<div class="flex items-center justify-between mb-4">
 					<h2 class="text-lg font-semibold text-gray-900">All Appointments</h2>
 					<span class="text-sm text-gray-500">{{ appointmentService.totalCount() }} total</span>
+				</div>
+
+				<!-- Filters -->
+				<div class="bg-white rounded-2xl shadow-sm p-4 mb-4">
+					<div class="flex flex-wrap items-end gap-3">
+						<div class="flex flex-col gap-1.5">
+							<label class="text-xs font-semibold text-gray-600">Service</label>
+							<p-select
+								[options]="serviceOptions()"
+								[(ngModel)]="selectedServiceId"
+								optionLabel="label"
+								optionValue="value"
+								placeholder="All Services"
+								styleClass="w-48"
+								[showClear]="true"
+								[appendTo]="'body'"
+							/>
+						</div>
+
+						<div class="flex flex-col gap-1.5">
+							<label class="text-xs font-semibold text-gray-600">Staff</label>
+							<p-select
+								[options]="staffOptions()"
+								[(ngModel)]="selectedStaffId"
+								optionLabel="label"
+								optionValue="value"
+								placeholder="All Staff"
+								styleClass="w-48"
+								[showClear]="true"
+								[appendTo]="'body'"
+							/>
+						</div>
+
+						<div class="flex flex-col gap-1.5">
+							<label class="text-xs font-semibold text-gray-600">Status</label>
+							<p-select
+								[options]="statusOptions"
+								[(ngModel)]="selectedStatus"
+								optionLabel="label"
+								optionValue="value"
+								placeholder="All Statuses"
+								styleClass="w-44"
+								[showClear]="true"
+								[appendTo]="'body'"
+							/>
+						</div>
+
+						<div class="flex flex-col gap-1.5">
+							<label class="text-xs font-semibold text-gray-600">From Date</label>
+							<p-datePicker
+								[(ngModel)]="fromDate"
+								dateFormat="yy-mm-dd"
+								placeholder="From"
+								styleClass="w-40"
+								[showIcon]="true"
+								[appendTo]="'body'"
+							/>
+						</div>
+
+						<div class="flex flex-col gap-1.5">
+							<label class="text-xs font-semibold text-gray-600">To Date</label>
+							<p-datePicker
+								[(ngModel)]="toDate"
+								dateFormat="yy-mm-dd"
+								placeholder="To"
+								styleClass="w-40"
+								[showIcon]="true"
+								[appendTo]="'body'"
+								(minDate]="fromDate()"
+								(onSelect)="onFilterChange()"
+							/>
+						</div>
+
+						<button
+							type="button"
+							class="h-10 px-4 flex items-center gap-2 text-sm font-medium text-white bg-primary hover:bg-primary-700 rounded-lg transition-colors cursor-pointer"
+							(click)="onFilterChange()"
+						>
+							<i class="pi pi-search text-xs"></i>
+							Apply
+						</button>
+
+						<button
+							type="button"
+							class="h-10 px-4 flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+							(click)="clearFilters()"
+						>
+							<i class="pi pi-times text-xs"></i>
+							Clear
+						</button>
+					</div>
 				</div>
 
 				<div class="bg-white rounded-2xl shadow-sm">
@@ -101,6 +192,7 @@
 								@for (appointment of appointmentService.appointments(); track appointment.id) {
 									<tr
 										class="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
+										(click)="navigateToAppointment(appointment.id)"
 									>
 										<td class="py-4 px-6">
 											<div class="flex items-center gap-3">
@@ -129,7 +221,7 @@
 										</td>
 										<td class="py-4 px-6">
 											<span class="text-sm text-gray-600"
-												>{{ appointment.startTime }} - {{ appointment.endTime }}</span
+												>{{ getTimeRange(appointment.startTime, appointment.estimatedDurationMinutes) }}</span
 											>
 										</td>
 										<td class="py-4 px-6">

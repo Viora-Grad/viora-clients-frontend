@@ -23,10 +23,10 @@ export class AppointmentService {
 			const response = await firstValueFrom(this._api.getAppointments(request));
 			const appointments = response.items.map(mapApiResponseToAppointment);
 			this.appointments.set(appointments);
-			this.currentPage.set(Number(response.page));
-			this.pageSize.set(Number(response.pageSize));
-			this.totalCount.set(Number(response.totalCount));
-			this.totalPages.set(Number(response.totalPages));
+			this.currentPage.set(response.page);
+			this.pageSize.set(response.pageSize);
+			this.totalCount.set(response.totalCount);
+			this.totalPages.set(response.totalPages);
 			this.hasNextPage.set(response.hasNextPage);
 			this.hasPreviousPage.set(response.hasPreviousPage);
 		} catch {

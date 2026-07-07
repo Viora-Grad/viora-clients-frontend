@@ -1,0 +1,152 @@
+<div class="flex flex-col h-full">
+	<!-- Top Navbar with patient details -->
+	<div class="flex items-center gap-4 bg-white px-6 py-4 shadow-sm shrink-0">
+		<button
+			type="button"
+			class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer"
+			(click)="goBack()"
+		>
+			<i class="pi pi-arrow-left"></i>
+		</button>
+		<div class="flex items-center gap-3">
+			<div class="flex items-center justify-center w-11 h-11 rounded-full bg-primary/10 shrink-0">
+				<i class="pi pi-user text-primary"></i>
+			</div>
+			<div class="min-w-0">
+				<h1 class="text-lg font-bold text-gray-900 truncate">{{ patientName() || 'Form Submission' }}</h1>
+				<p class="text-xs text-gray-500 truncate">
+					@if (serviceName()) {
+						{{ serviceName() }} ·
+					}
+					{{ formatDateTime(reservationDate()) }}
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Content -->
+	<div class="flex-1 overflow-y-auto">
+		<div class="p-6 max-w-6xl mx-auto">
+			@if (isLoading()) {
+				<div class="flex items-center justify-center py-20">
+					<i class="pi pi-spin pi-spinner text-primary text-2xl"></i>
+				</div>
+			} @else if (error()) {
+				<div class="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-sm">
+					<div class="flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4">
+						<i class="pi pi-exclamation-circle text-amber-500 text-2xl"></i>
+					</div>
+					<p class="text-gray-600 text-sm mb-4">{{ error() }}</p>
+					<p-button label="Go Back" icon="pi pi-arrow-left" [outlined]="true" (click)="goBack()" />
+				</div>
+			} @else {
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+					<!-- Answers -->
+					<div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6">
+						<div class="flex items-center gap-2 mb-5">
+							<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+								<i class="pi pi-list-check text-primary text-sm"></i>
+							</div>
+							<h3 class="text-sm font-semibold text-gray-900">
+								{{ form()?.name || 'Form Answers' }}
+							</h3>
+						</div>
+
+						@if (rows().length === 0) {
+							<p class="text-sm text-gray-400 py-6 text-center">No answers were submitted.</p>
+						} @else {
+							<div class="flex flex-col gap-5">
+								@for (row of rows(); track row.key) {
+									<div class="flex flex-col gap-1.5">
+										<div class="flex items-center gap-2">
+											<span class="text-xs font-semibold text-gray-600">{{ row.label }}</span>
+											<span
+												class="text-[10px] uppercase tracking-wider text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded"
+											>
+												{{ row.type }}
+											</span>
+										</div>
+
+										@if (isFileField(row.type)) {
+											<div
+												class="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-lg bg-gray-50"
+											>
+												<i class="pi pi-paperclip text-gray-400 text-sm"></i>
+												<span class="text-sm text-gray-700">{{ displayAnswer(row) }}</span>
+											</div>
+										} @else if (isTextarea(row.type)) {
+											<div
+												class="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800 whitespace-pre-wrap min-h-[4.5rem]"
+											>
+												{{ displayAnswer(row) }}
+											</div>
+										} @else {
+											<div
+												class="px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-sm text-gray-800"
+											>
+												{{ displayAnswer(row) }}
+											</div>
+										}
+									</div>
+								}
+							</div>
+						}
+					</div>
+
+					<!-- Files -->
+					<div class="bg-white rounded-2xl shadow-sm p-6 h-fit">
+						<div class="flex items-center gap-2 mb-5">
+							<div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+								<i class="pi pi-folder-open text-emerald-500 text-sm"></i>
+							</div>
+							<h3 class="text-sm font-semibold text-gray-900">Submitted Files</h3>
+						</div>
+
+						@if (fileError()) {
+							<div class="flex items-center gap-2 p-3 bg-red-50 rounded-xl mb-4">
+								<i class="pi pi-exclamation-triangle text-red-500 text-sm"></i>
+								<p class="text-xs text-red-700">{{ fileError() }}</p>
+							</div>
+						}
+
+						@if (files().length === 0) {
+							<div class="flex flex-col items-center justify-center py-8 text-center">
+								<div class="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+									<i class="pi pi-file text-gray-400"></i>
+								</div>
+								<p class="text-sm text-gray-500">No files submitted.</p>
+							</div>
+						} @else {
+							<div class="flex flex-col gap-3">
+								@for (file of files(); track file.id) {
+									<div class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl">
+										<div
+											class="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 shrink-0"
+										>
+											<i class="pi pi-file text-gray-500 text-sm"></i>
+										</div>
+										<div class="min-w-0 flex-1">
+											<p class="text-sm font-medium text-gray-800 truncate" [title]="file.fileName">
+												{{ file.fileName }}
+											</p>
+											<p class="text-[11px] text-gray-400">{{ formatDateTime(file.createdAt) }}</p>
+										</div>
+										<p-button
+											icon="pi pi-download"
+											size="small"
+											[rounded]="true"
+											[text]="true"
+											[loading]="downloadingId() === file.id"
+											styleClass="!text-primary"
+											(click)="download(file)"
+										/>
+									</div>
+								}
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>

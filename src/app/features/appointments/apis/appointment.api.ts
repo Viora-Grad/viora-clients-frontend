@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { AppointmentListResponse, GetAppointmentsRequest } from '../dtos/appointment.dto';
+import {
+	AppointmentDetailResponse,
+	AppointmentListResponse,
+	GetAppointmentsRequest,
+} from '../dtos/appointment.dto';
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentApi {
@@ -29,5 +33,25 @@ export class AppointmentApi {
 				params,
 			},
 		);
+	}
+
+	public getAppointmentById(appointmentId: string): Observable<AppointmentDetailResponse> {
+		return this._http.get<AppointmentDetailResponse>(
+			`${environment.apiBaseUrl}/appointments/${appointmentId}`,
+		);
+	}
+
+	public markNoShow(appointmentId: string): Observable<unknown> {
+		return this._http.patch(`${environment.apiBaseUrl}/${appointmentId}/no-show`, {});
+	}
+
+	public completeAppointment(appointmentId: string): Observable<unknown> {
+		return this._http.patch(`${environment.apiBaseUrl}/appointments/${appointmentId}/complete`, {});
+	}
+
+	public checkInAppointment(appointmentId: string, qrCode: string): Observable<unknown> {
+		return this._http.patch(`${environment.apiBaseUrl}/appointments/${appointmentId}/check-in`, {
+			qrCode,
+		});
 	}
 }

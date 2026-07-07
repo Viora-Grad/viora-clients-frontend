@@ -1,0 +1,70 @@
+<div class="flex flex-col h-full">
+	<!-- Top Navbar -->
+	<div class="flex items-center justify-between bg-white px-6 py-4 shadow-sm shrink-0">
+		<h1 class="text-xl font-bold text-gray-900">Prescription Templates</h1>
+		<p-button
+			label="New Template"
+			icon="pi pi-plus"
+			[raised]="true"
+			routerLink="/prescriptions/create"
+			styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+		/>
+	</div>
+
+	<!-- Main Content -->
+	<div class="flex-1 overflow-auto p-6">
+		@if (templateService.isLoading()) {
+			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+				@for (placeholder of [1, 2, 3, 4]; track placeholder) {
+					<div class="bg-white rounded-2xl shadow-sm overflow-hidden animate-pulse">
+						<div class="aspect-[3/4] bg-gray-100"></div>
+						<div class="p-4">
+							<div class="h-4 w-2/3 bg-gray-100 rounded"></div>
+						</div>
+					</div>
+				}
+			</div>
+		} @else if (templateService.templates().length === 0) {
+			<div class="flex flex-col items-center justify-center gap-4 py-24 text-center">
+				<div class="flex items-center justify-center w-16 h-16 rounded-full bg-gray-100">
+					<i class="pi pi-file-edit text-2xl text-gray-400"></i>
+				</div>
+				<div>
+					<p class="text-sm font-semibold text-gray-700">No prescription templates yet</p>
+					<p class="text-sm text-gray-400">Create your first template to get started.</p>
+				</div>
+				<p-button
+					label="New Template"
+					icon="pi pi-plus"
+					routerLink="/prescriptions/create"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+				/>
+			</div>
+		} @else {
+			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+				@for (template of templateService.templates(); track template.id) {
+					<div
+						class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow"
+					>
+						<div class="aspect-[3/4] bg-gray-50 flex items-center justify-center overflow-hidden">
+							@if (template.imageUrl) {
+								<img
+									[src]="template.imageUrl"
+									[alt]="template.name"
+									class="w-full h-full object-cover"
+								/>
+							} @else {
+								<i class="pi pi-image text-3xl text-gray-300"></i>
+							}
+						</div>
+						<div class="p-4">
+							<p class="text-sm font-semibold text-gray-900 truncate" [title]="template.name">
+								{{ template.name }}
+							</p>
+						</div>
+					</div>
+				}
+			</div>
+		}
+	</div>
+</div>

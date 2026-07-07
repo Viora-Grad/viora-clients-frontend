@@ -21,6 +21,7 @@ export class ShellComponent {
 		{ label: 'Branches', icon: 'pi pi-building', route: '/branches' },
 		{ label: 'Staff', icon: 'pi pi-users', route: '/staffs' },
 		{ label: 'Roles', icon: 'pi pi-user-edit', route: '/roles' },
+		{ label: 'Prescriptions', icon: 'pi pi-file-edit', route: '/prescriptions' },
 		{ label: 'ViVi Marketing', icon: 'pi pi-microchip-ai', route: '/vivi' },
 		{ label: 'Billing', icon: 'pi pi-dollar', route: '/billing' },
 	];
