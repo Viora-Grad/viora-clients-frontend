@@ -1,61 +1,165 @@
 <p-toast />
 
-<div class="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-	<div class="w-full max-w-lg">
-		@if (facebookStore.pages().length === 0 && !facebookStore.isLoading()) {
-			<div class="text-center">
-				<h1 class="text-2xl font-bold text-gray-900">ViVi Marketing</h1>
-				<p class="mt-2 text-gray-500">Connect your Facebook page to start managing your marketing.</p>
+@if (selectedChatId()) {
+	<app-chat-detail
+		[chat]="marketingStore.selectedChat()"
+		[messages]="displayMessages()"
+		[isConnected]="isConnected"
+		[isPolling]="isPolling()"
+		(back)="onBack()"
+		(sendMessage)="onSendMessage($event)"
+		(published)="onPublished()"
+	/>
+} @else {
+	<div class="flex flex-col h-full">
+		<!-- Top Navbar -->
+		<div class="flex items-center justify-between bg-white px-6 py-4 shadow-sm shrink-0">
+			<h1 class="text-xl font-bold text-gray-900">ViVi Marketing</h1>
+			@if (isConnected) {
 				<p-button
-					label="Connect Facebook Page"
+					label="Disconnect"
 					icon="pi pi-facebook"
-					styleClass="mt-6"
-					(click)="onConnectFacebook()" />
-			</div>
-		}
+					severity="danger"
+					[outlined]="true"
+					(click)="showDisconnectDialog.set(true)"
+				/>
+			}
+		</div>
 
-		@if (facebookStore.isLoading()) {
-			<div class="flex flex-col items-center gap-4">
-				<p-progressSpinner strokeWidth="4" />
-				<span class="text-gray-500">Loading...</span>
-			</div>
-		}
-
-		@if (facebookStore.pages().length > 0 && !facebookStore.isLoading()) {
-			<div>
-				<h2 class="text-xl font-bold text-gray-900">Select a Facebook Page</h2>
-				<p class="mt-1 text-sm text-gray-500">Choose which page you want to connect.</p>
-
-				<div class="mt-4 flex flex-col gap-3">
-					@for (page of facebookStore.pages(); track page.id) {
-					<p-card
-						styleClass="cursor-pointer transition-all hover:shadow-md"
-						[class]="facebookStore.selectedPageId() === page.id ? 'selected-page-card' : ''">
-							<div class="flex items-center justify-between">
-								<div>
-									<p class="font-semibold text-gray-900">{{ page.name }}</p>
-									<p class="text-sm text-gray-500">{{ page.category }}</p>
-								</div>
-								<p-button
-									[label]="facebookStore.selectedPageId() === page.id ? 'Selected' : 'Select'"
-									[outlined]="facebookStore.selectedPageId() !== page.id"
-									Severity="primary"
-									size="small"
-									(click)="onPageSelect(page.id)" />
-							</div>
-						</p-card>
-					}
+		<!-- Content -->
+		<div class="flex-1 overflow-y-auto p-6">
+			<!-- Loading -->
+			@if (marketingStore.isLoadingCredentials() || marketingStore.isLoadingChats()) {
+				<div class="flex items-center justify-center py-20">
+					<i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
 				</div>
+			} @else {
+				<div class="flex flex-col gap-6">
+					<!-- Connection Warning -->
+					@if (!isConnected) {
+						<div
+							class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-6 py-4"
+						>
+							<div class="flex items-center gap-3">
+								<i class="pi pi-exclamation-triangle text-amber-500 text-lg"></i>
+								<p class="text-sm text-amber-700">
+									Connect to your Meta account to continue chatting.
+								</p>
+							</div>
+							<p-button
+								label="Connect Facebook"
+								icon="pi pi-facebook"
+								size="small"
+								[loading]="isConnecting()"
+								(click)="onConnectFacebook()"
+							/>
+						</div>
+					}
 
-				<div class="mt-6 flex justify-end gap-3">
-					<p-button label="Cancel" severity="secondary" [outlined]="true" (click)="facebookStore.reset()" />
+					<!-- Chat List -->
+					<div>
+						<h2 class="text-lg font-semibold text-gray-900 mb-4">Chats</h2>
+						@if (marketingStore.chats().length > 0) {
+							<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+								@for (chat of marketingStore.chats(); track chat.id) {
+									<button
+										type="button"
+										class="w-full flex items-center justify-between px-6 py-4 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-gray-50 transition-colors text-left"
+										(click)="onChatClick(chat.id)"
+										(keydown.enter)="onChatClick(chat.id)"
+									>
+										<div class="flex items-center gap-4 flex-1 min-w-0">
+											<span
+												class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold shrink-0"
+												[class.bg-yellow-100]="chat.status === 'Draft'"
+												[class.text-yellow-700]="chat.status === 'Draft'"
+												[class.bg-green-100]="chat.status === 'Published'"
+												[class.text-green-700]="chat.status === 'Published'"
+												[class.bg-gray-100]="chat.status === 'Archived'"
+												[class.text-gray-500]="chat.status === 'Archived'"
+											>
+												{{ chat.status }}
+											</span>
+											<span class="text-sm font-medium text-gray-900 truncate">
+												{{ chat.title ?? 'Untitled Chat' }}
+											</span>
+										</div>
+										<div class="flex items-center gap-3 shrink-0">
+											<span class="text-xs text-gray-400">{{
+												chat.createdAtUtc | date: 'mediumDate'
+											}}</span>
+											<i class="pi pi-chevron-right text-gray-400 text-xs"></i>
+										</div>
+									</button>
+								}
+							</div>
+						} @else {
+							<div
+								class="flex flex-col items-center justify-center py-16 bg-white rounded-xl shadow-sm"
+							>
+								<div
+									class="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3"
+								>
+									<i class="pi pi-comments text-gray-400"></i>
+								</div>
+								<p class="text-sm text-gray-500">No chats yet</p>
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+
+		<!-- New Chat Input -->
+		@if (isConnected) {
+			<div class="border-t border-gray-200 bg-white px-6 py-4 shrink-0">
+				<div class="flex items-center gap-3">
+					<input
+						type="text"
+						placeholder="Type your first message..."
+						class="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+						[ngModel]="newChatMessage()"
+						(ngModelChange)="newChatMessage.set($event)"
+						(keydown.enter)="onCreateChat()"
+					/>
 					<p-button
-						label="Connect"
-						icon="pi pi-check"
-						[disabled]="!facebookStore.selectedPageId()"
-						(click)="onConnectPage()" />
+						icon="pi pi-send"
+						[rounded]="true"
+						[loading]="marketingStore.isCreatingChat()"
+						[disabled]="!newChatMessage().trim() || marketingStore.isCreatingChat()"
+						styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+						(click)="onCreateChat()"
+					/>
 				</div>
 			</div>
 		}
 	</div>
-</div>
+}
+
+<!-- Disconnect Confirmation Dialog -->
+<p-dialog
+	header="Disconnect Facebook"
+	[modal]="true"
+	[(visible)]="showDisconnectDialog"
+	styleClass="disconnect-dialog"
+>
+	<div class="flex flex-col gap-4">
+		<p class="text-sm text-gray-600">
+			Are you sure you want to disconnect your Facebook page? You will lose access to chat features
+			until you reconnect.
+		</p>
+		<div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+			<p-button
+				label="Cancel"
+				styleClass="p-button-text"
+				(click)="showDisconnectDialog.set(false)"
+			/>
+			<p-button
+				label="Disconnect"
+				severity="danger"
+				[loading]="marketingStore.isLoadingCredentials()"
+				(click)="onDisconnectConfirm()"
+			/>
+		</div>
+	</div>
+</p-dialog>

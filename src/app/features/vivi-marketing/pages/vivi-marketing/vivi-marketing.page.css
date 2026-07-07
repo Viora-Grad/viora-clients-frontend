@@ -1,4 +1,8 @@
-:host ::ng-deep .selected-page-card {
-	border: 2px solid #3b82f6;
-	background-color: #eff6ff;
+:host {
+	display: block;
+	height: 100%;
+}
+
+:host ::ng-deep .disconnect-dialog {
+	width: 400px;
 }
