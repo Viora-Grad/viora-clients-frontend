@@ -1,0 +1,9 @@
+:host ::ng-deep .archive-dialog {
+	width: 32rem;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .archive-dialog-sm {
+	width: 26rem;
+	max-width: 95vw;
+}

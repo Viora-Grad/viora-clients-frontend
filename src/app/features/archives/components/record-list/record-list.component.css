@@ -1,0 +1,9 @@
+:host ::ng-deep .record-dialog {
+	width: 44rem;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .record-dialog-sm {
+	width: 24rem;
+	max-width: 95vw;
+}
