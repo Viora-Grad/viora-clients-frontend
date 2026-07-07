@@ -1,0 +1,140 @@
+<div class="flex items-center gap-2 mb-4">
+	<div class="relative flex-1">
+		<i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+		<input
+			pInputText
+			[ngModel]="searchTerm()"
+			(ngModelChange)="searchTerm.set($event)"
+			(keyup.enter)="onSearch()"
+			placeholder="Search records…"
+			class="w-full !pl-9"
+		/>
+	</div>
+	<p-button label="Search" size="small" [outlined]="true" (onClick)="onSearch()" />
+</div>
+
+@if (recordService.isLoading()) {
+	<div class="flex items-center justify-center py-8">
+		<i class="pi pi-spin pi-spinner text-primary text-xl"></i>
+	</div>
+} @else if (recordService.records().length === 0) {
+	<div class="flex flex-col items-center justify-center py-10 text-center">
+		<div class="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+			<i class="pi pi-inbox text-gray-400"></i>
+		</div>
+		<p class="text-sm text-gray-500">No records in this folder.</p>
+		<p class="text-xs text-gray-400 mt-1">Records are created from an appointment.</p>
+	</div>
+} @else {
+	<div class="flex flex-col gap-2">
+		@for (record of recordService.records(); track record.id) {
+			<div class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+				<div class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10 shrink-0">
+					<i class="pi pi-file text-primary text-sm"></i>
+				</div>
+				<div class="min-w-0 flex-1">
+					<p class="text-sm font-medium text-gray-800 truncate">{{ summary(record) }}</p>
+					<p class="text-[11px] text-gray-400">{{ formatDate(record.createdAt) }}</p>
+				</div>
+				<button
+					type="button"
+					class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+					(click)="openView(record)"
+				>
+					<i class="pi pi-eye text-sm"></i>
+				</button>
+				<button
+					type="button"
+					class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+					(click)="openEdit(record)"
+				>
+					<i class="pi pi-pencil text-sm"></i>
+				</button>
+				<button
+					type="button"
+					class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+					(click)="deleteTarget.set(record)"
+				>
+					<i class="pi pi-trash text-sm"></i>
+				</button>
+			</div>
+		}
+	</div>
+}
+
+<!-- View dialog -->
+<p-dialog
+	[visible]="viewRecord() !== null"
+	(visibleChange)="!$event && viewRecord.set(null)"
+	header="Record"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="record-dialog"
+>
+	@if (viewRecord(); as record) {
+		<app-record-view [record]="record" />
+	}
+</p-dialog>
+
+<!-- Edit dialog -->
+<p-dialog
+	[visible]="editRecord() !== null"
+	(visibleChange)="!$event && editRecord.set(null)"
+	header="Edit Record"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="record-dialog"
+>
+	@if (editRecord(); as record) {
+		<app-dynamic-record-form [fields]="editFields()" [initialValues]="record.values" />
+	}
+	<ng-template #footer>
+		<div class="flex justify-end gap-2">
+			<p-button
+				label="Cancel"
+				[outlined]="true"
+				[styleClass]="'!border-gray-300 !text-gray-700 hover:!bg-gray-50'"
+				(onClick)="editRecord.set(null)"
+			/>
+			<p-button
+				label="Save"
+				icon="pi pi-check"
+				[loading]="isSaving()"
+				styleClass="!bg-primary !border-primary hover:!bg-primary/90"
+				(onClick)="saveEdit()"
+			/>
+		</div>
+	</ng-template>
+</p-dialog>
+
+<!-- Delete confirm -->
+<p-dialog
+	[visible]="deleteTarget() !== null"
+	(visibleChange)="!$event && deleteTarget.set(null)"
+	header="Delete Record"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	styleClass="record-dialog-sm"
+>
+	<p class="text-sm text-gray-600">Delete this record? This cannot be undone.</p>
+	<ng-template #footer>
+		<div class="flex justify-end gap-2">
+			<p-button
+				label="Cancel"
+				[outlined]="true"
+				[styleClass]="'!border-gray-300 !text-gray-700 hover:!bg-gray-50'"
+				(onClick)="deleteTarget.set(null)"
+			/>
+			<p-button
+				label="Delete"
+				icon="pi pi-trash"
+				[loading]="isDeleting()"
+				styleClass="!bg-red-500 !border-red-500 hover:!bg-red-600"
+				(onClick)="confirmDelete()"
+			/>
+		</div>
+	</ng-template>
+</p-dialog>

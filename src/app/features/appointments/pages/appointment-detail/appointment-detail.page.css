@@ -2,3 +2,8 @@
 	width: 40rem;
 	max-width: 95vw;
 }
+
+:host ::ng-deep .archive-record-dialog {
+	width: 44rem;
+	max-width: 95vw;
+}

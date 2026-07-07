@@ -1,0 +1,9 @@
+:host ::ng-deep .folder-dialog {
+	width: 28rem;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .folder-dialog-sm {
+	width: 24rem;
+	max-width: 95vw;
+}

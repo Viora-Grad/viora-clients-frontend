@@ -1,0 +1,14 @@
+:host ::ng-deep .template-dialog {
+	width: 30rem;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .template-dialog-sm {
+	width: 24rem;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .record-create-dialog {
+	width: 44rem;
+	max-width: 95vw;
+}

@@ -205,14 +205,19 @@ export const routes: Routes = [
 								(m) => m.PrescriptionsPage,
 							),
 					},
-					{
-						path: 'prescriptions/create',
-						loadComponent: () =>
-							import('./features/prescriptions/pages/create-prescription-template/create-prescription-template.page').then(
-								(m) => m.CreatePrescriptionTemplatePage,
-							),
-					},
-				],
+				{
+					path: 'prescriptions/create',
+					loadComponent: () =>
+						import('./features/prescriptions/pages/create-prescription-template/create-prescription-template.page').then(
+							(m) => m.CreatePrescriptionTemplatePage,
+						),
+				},
+				{
+					path: 'archives',
+					loadChildren: () =>
+						import('./features/archives/archives.routes').then((m) => m.ARCHIVES_ROUTES),
+				},
+			],
 			},
 		],
 	},

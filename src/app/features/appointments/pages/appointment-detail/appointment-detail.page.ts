@@ -7,14 +7,27 @@ import {
 	OnDestroy,
 	OnInit,
 	signal,
+	viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { MessageService, TreeNode } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
 import { Tag } from 'primeng/tag';
+import { Toast } from 'primeng/toast';
+import { Tree, TreeNodeSelectEvent } from 'primeng/tree';
 import { firstValueFrom } from 'rxjs';
 import { TenantStore } from '../../../../core/tenant/stores/tenant.store';
+import { ArchiveApi } from '../../../archives/apis/archive.api';
+import { ArchiveTreeNode } from '../../../archives/models/folder.model';
+import { Template, TemplateVersionField } from '../../../archives/models/template.model';
+import { ArchiveService } from '../../../archives/services/archive.service';
+import { RecordService } from '../../../archives/services/record.service';
+import { TemplateService } from '../../../archives/services/template.service';
+import { DynamicRecordFormComponent } from '../../../archives/components/dynamic-record-form/dynamic-record-form.component';
 import { FormSubmissionService } from '../../../form-submissions/services/form-submission.service';
 import { PrescriptionApi } from '../../../prescriptions/apis/prescription.api';
 import { Prescription, PrescriptionItem } from '../../../prescriptions/models/prescription.model';
@@ -39,7 +52,19 @@ const STATUS_SEVERITY: Record<string, 'success' | 'warn' | 'danger' | 'secondary
 @Component({
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	selector: 'app-appointment-detail',
-	imports: [Button, Tag, Dialog, FormsModule, RouterLink],
+	imports: [
+		FormsModule,
+		Button,
+		Tag,
+		Dialog,
+		InputText,
+		Select,
+		Tree,
+		Toast,
+		RouterLink,
+		DynamicRecordFormComponent,
+	],
+	providers: [MessageService],
 	styleUrl: './appointment-detail.page.css',
 	templateUrl: './appointment-detail.page.html',
 })
@@ -52,6 +77,11 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 	private readonly _printService = inject(PrescriptionPrintService);
 	private readonly _formSubmissionService = inject(FormSubmissionService);
 	protected readonly templateService = inject(PrescriptionTemplateService);
+	private readonly _archiveService = inject(ArchiveService);
+	private readonly _archiveApi = inject(ArchiveApi);
+	private readonly _archiveRecordService = inject(RecordService);
+	private readonly _archiveTemplateService = inject(TemplateService);
+	private readonly _messageService = inject(MessageService);
 
 	protected readonly appointment = signal<AppointmentDetail | null>(null);
 	protected readonly isLoading = signal(true);
@@ -72,6 +102,34 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 
 	protected readonly hasFormSubmission = signal(false);
 	protected readonly formSubmissionDate = signal<string | null>(null);
+
+	// ---- Archive record state ----
+	protected readonly isArchiveRecordDialogVisible = signal(false);
+	protected readonly isSavingArchiveRecord = signal(false);
+	protected readonly archiveRecordError = signal<string | null>(null);
+	protected readonly selectedArchiveId = signal<string | null>(null);
+	protected readonly archiveTree = signal<ArchiveTreeNode | null>(null);
+	protected readonly selectedFolderId = signal<string | null>(null);
+	protected readonly templatesInFolder = signal<Template[]>([]);
+	protected readonly isLoadingTree = signal(false);
+	protected readonly selectedTemplateForRecord = signal<Template | null>(null);
+	protected readonly recordFields = signal<TemplateVersionField[]>([]);
+
+	protected readonly archiveTreeNodes = computed<TreeNode[]>(() => {
+		const tree = this.archiveTree();
+		return tree ? [this._toTreeNode(tree)] : [];
+	});
+
+	protected readonly archiveOptions = computed(() => {
+		return this._archiveService.archives().map((a) => ({ label: a.name, value: a.id }));
+	});
+
+	protected readonly canCreateArchiveRecord = computed(() => {
+		const status = (this.appointment()?.status ?? '').toLowerCase();
+		return status === 'completed' || status === 'inprogress';
+	});
+
+	private readonly _recordForm = viewChild(DynamicRecordFormComponent);
 
 	// A prescription can be created only when none exists yet and the visit is
 	// active or done (Completed / InProgress).
@@ -101,6 +159,7 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 		}
 		this._appointmentId = id;
 		void this._loadAppointment(id);
+		void this._loadArchives();
 	}
 
 	public ngOnDestroy(): void {
@@ -469,6 +528,152 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 			);
 		} finally {
 			this.isPrinting.set(false);
+		}
+	}
+
+	// ---- Archive record methods ----
+
+	private async _loadArchives(): Promise<void> {
+		const organizationId = this._tenantStore.organizationId();
+		if (!organizationId) return;
+		await this._archiveService.loadArchives(organizationId);
+	}
+
+	private _toTreeNode(node: ArchiveTreeNode): TreeNode {
+		const isTemplate = node.nodeType === 'Template';
+		return {
+			key: node.id,
+			label: node.name,
+			icon: isTemplate ? 'pi pi-clone' : 'pi pi-folder',
+			data: { type: node.nodeType, id: node.id },
+			expanded: node.nodeType === 'Archive',
+			leaf: isTemplate,
+			children: (node.children ?? []).map((child) => this._toTreeNode(child)),
+		};
+	}
+
+	protected async onArchiveChange(archiveId: string): Promise<void> {
+		this.selectedArchiveId.set(archiveId);
+		this.selectedFolderId.set(null);
+		this.templatesInFolder.set([]);
+		this.selectedTemplateForRecord.set(null);
+		this.recordFields.set([]);
+		this.isLoadingTree.set(true);
+		try {
+			const tree = await firstValueFrom(this._archiveApi.getFolderTree(archiveId));
+			this.archiveTree.set(tree);
+		} catch {
+			this.archiveTree.set(null);
+		} finally {
+			this.isLoadingTree.set(false);
+		}
+	}
+
+	protected onArchiveTreeNodeSelect(event: TreeNodeSelectEvent): void {
+		const data = event.node.data as { type: string; id: string } | undefined;
+		if (!data) return;
+
+		if (data.type === 'Template') {
+			void this._selectTemplateForRecord(data.id);
+			return;
+		}
+
+		const archiveId = this.selectedArchiveId();
+		if (!archiveId) return;
+		const folderId = data.type === 'Archive' ? null : data.id;
+		this.selectedFolderId.set(folderId);
+		this.selectedTemplateForRecord.set(null);
+		this.recordFields.set([]);
+
+		if (folderId) {
+			void this._loadTemplatesForFolder(archiveId, folderId);
+		} else {
+			this.templatesInFolder.set([]);
+		}
+	}
+
+	protected selectTemplateFromList(templateId: string): void {
+		void this._selectTemplateForRecord(templateId);
+	}
+
+	private async _loadTemplatesForFolder(archiveId: string, folderId: string): Promise<void> {
+		try {
+			const templates = await firstValueFrom(
+				this._archiveApi.getTemplatesByFolder(archiveId, folderId),
+			);
+			this.templatesInFolder.set(templates);
+		} catch {
+			this.templatesInFolder.set([]);
+		}
+	}
+
+	private async _selectTemplateForRecord(templateId: string): Promise<void> {
+		const archiveId = this.selectedArchiveId();
+		if (!archiveId) return;
+		try {
+			const template = await firstValueFrom(this._archiveApi.getTemplate(archiveId, templateId));
+			if (template.currentVersion === 0) {
+				this._messageService.add({
+					severity: 'warn',
+					summary: 'No published version',
+					detail: 'This template has no published version yet.',
+				});
+				return;
+			}
+			const version = await this._archiveTemplateService.getCurrentVersion(archiveId, templateId);
+			this.selectedTemplateForRecord.set(template);
+			this.recordFields.set(version.fields);
+		} catch {
+			this._messageService.add({
+				severity: 'error',
+				summary: 'Error',
+				detail: 'Could not load template fields.',
+			});
+		}
+	}
+
+	protected openArchiveRecordDialog(): void {
+		this.archiveRecordError.set(null);
+		this.selectedArchiveId.set(null);
+		this.archiveTree.set(null);
+		this.selectedFolderId.set(null);
+		this.templatesInFolder.set([]);
+		this.selectedTemplateForRecord.set(null);
+		this.recordFields.set([]);
+		this.isArchiveRecordDialogVisible.set(true);
+	}
+
+	protected async saveArchiveRecord(): Promise<void> {
+		const archiveId = this.selectedArchiveId();
+		const template = this.selectedTemplateForRecord();
+		const form = this._recordForm();
+		const appt = this.appointment();
+		if (!archiveId || !template || !form || !appt) return;
+
+		const values = form.collect();
+		if (!values) return;
+
+		this.isSavingArchiveRecord.set(true);
+		this.archiveRecordError.set(null);
+		try {
+			await this._archiveRecordService.createRecord(archiveId, {
+				folderId: this.selectedFolderId() ?? '',
+				customerId: appt.customerId ?? '',
+				appointmentId: appt.appointmentId,
+				templateId: template.id,
+				templateVersion: template.currentVersion,
+				values,
+			});
+			this.isArchiveRecordDialogVisible.set(false);
+			this._messageService.add({
+				severity: 'success',
+				summary: 'Created',
+				detail: 'Archive record created.',
+			});
+		} catch {
+			this.archiveRecordError.set('Failed to create record. Please try again.');
+		} finally {
+			this.isSavingArchiveRecord.set(false);
 		}
 	}
 }
