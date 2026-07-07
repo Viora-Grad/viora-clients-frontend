@@ -1,0 +1,227 @@
+<p-toast />
+
+<!-- Hidden file inputs -->
+<input placeholder="file" #logoInput type="file" accept="image/*" class="hidden"
+	(change)="onLogoSelected($event)" />
+<!-- <input placeholder="file" #imagesInput type="file" accept="image/*" multiple class="hidden" (change)="onImagesSelected($event)" /> -->
+<!-- <input placeholder="file" #docsInput type="file" multiple class="hidden" (change)="onDocsSelected($event)" /> -->
+
+@if (store.isLoading()) {
+<div class="p-6 space-y-4">
+	<p-skeleton height="2rem" width="30%" />
+	<p-skeleton height="1rem" width="15%" />
+	<div class="grid grid-cols-2 gap-6 mt-6">
+		<p-skeleton height="400px" />
+		<p-skeleton height="400px" />
+	</div>
+</div>
+} @else if (store.organization(); as org) {
+<div class="p-6">
+
+	<!-- Header -->
+	<div class="flex items-center justify-between mb-6">
+		<div>
+			<h1 class="text-2xl font-bold text-gray-900">Edit Organization</h1>
+			<div class="flex items-center gap-3 mt-1">
+				<span class="text-sm text-gray-400">{{ org.name }}</span>
+				<span class="text-gray-300">·</span>
+				<span class="text-sm text-gray-400">Joined {{ org.joinedOnUtc |
+					date:'MMM d, yyyy' }}</span>
+			</div>
+		</div>
+		<div class="flex justify-center items-center gap-3">
+			<a routerLink="../" class="btn-ghost ">
+				<i class="pi pi-arrow-left"></i>
+				Back
+			</a>
+			<p-button
+				label="Save Changes"
+				icon="pi pi-check"
+				[loading]="store.isSaving()"
+				[disabled]="form.invalid || isSubDomainTaken()"
+				(onClick)="onSave()" />
+		</div>
+	</div>
+
+	<form [formGroup]="form"
+		class="grid grid-cols-1 gap-6 xl:grid-cols-2 items-start">
+
+		<!-- Left column -->
+		<div class="flex flex-col gap-4">
+
+			<!-- Logo -->
+			<div class="border border-gray-200 rounded-lg p-5">
+				<h2 class="section-title"><i class="pi pi-image"></i> Logo</h2>
+				<div class="flex items-center gap-4 mt-3">
+					@if (store.logoUrl()) {
+					<!-- eslint-disable-next-line @angular-eslint/template/prefer-ngsrc -->
+					<img [src]="store.logoUrl()"
+						width="80"
+						height="80"
+						alt=""
+						class="w-20 h-20 rounded-lg object-cover border border-gray-200" />
+					} @else {
+					<div
+						class="w-20 h-20 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
+						<i class="pi pi-building text-gray-400 text-2xl"></i>
+					</div>
+					}
+					<p-button
+						label="Upload Logo"
+						icon="pi pi-upload"
+						severity="secondary"
+						[outlined]="true"
+						[loading]="store.isUploadingLogo()"
+						(onClick)="onLogoClick()" />
+				</div>
+			</div>
+
+			<!-- Organization Info -->
+			<div class="border border-gray-200 rounded-lg p-5">
+				<h2 class="section-title"><i class="pi pi-info-circle"></i> Organization
+					Info</h2>
+				<div class="flex flex-col gap-3 mt-3">
+					<div class="info-row">
+						<span class="info-label">Name</span>
+						<span class="info-value">{{ org.name }}</span>
+					</div>
+					<div class="info-row">
+						<span class="info-label">Country</span>
+						<span class="info-value">{{ org.country }} ({{ org.countryCode }})</span>
+					</div>
+					<div class="info-row">
+						<span class="info-label">Contact Email</span>
+						<span class="info-value">{{ org.contactEmail }}</span>
+					</div>
+					<div class="info-row">
+						<span class="info-label">Joined</span>
+						<span class="info-value">{{ org.joinedOnUtc | date:'MMM d, yyyy' }}</span>
+					</div>
+					<div class="info-row">
+						<span class="info-label">Branches</span>
+						<span class="info-value">{{ org.branches.length }}</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Contact -->
+			<div class="border border-gray-200 rounded-lg p-5">
+				<h2 class="section-title"><i class="pi pi-envelope"></i> Contact &
+					Billing</h2>
+				<div class="flex flex-col gap-4 mt-3">
+					<div class="field">
+						<label for="supportEmail" class="field-label">Support Email</label>
+						<input pInputText formControlName="supportEmail"
+							placeholder="support@example.com" class="w-full" />
+						@if (form.controls.supportEmail.touched &&
+						form.controls.supportEmail.invalid) {
+						<span class="field-error">Valid email required.</span>
+						}
+					</div>
+					<div class="field">
+						<label for="billingEmail" class="field-label">Billing Email</label>
+						<input pInputText formControlName="billingEmail"
+							placeholder="billing@example.com" class="w-full" />
+						@if (form.controls.billingEmail.touched &&
+						form.controls.billingEmail.invalid) {
+						<span class="field-error">Valid email required.</span>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Right column -->
+		<div class="flex flex-col gap-4">
+
+			<!-- Profile -->
+			<div class="border border-gray-200 rounded-lg p-5">
+				<h2 class="section-title"><i class="pi pi-building"></i> Profile</h2>
+
+				<div class="flex flex-col gap-4 mt-3">
+					<!-- SubDomain -->
+					<div class="field">
+						<label for="subDomain" class="field-label">Sub Domain</label>
+						<input
+							pInputText
+							formControlName="subDomain"
+							placeholder="e.g. my-org"
+							class="w-full"
+							(input)="onSubDomainInput()" />
+						<div class="field-hint">
+							@if (store.isCheckingSubDomain()) {
+							<span class="checking"><i class="pi pi-spin pi-spinner text-xs"></i>
+								Checking availability...</span>
+							} @else if (store.subDomainAvailable() === true) {
+							<span class="available"><i class="pi pi-check-circle text-xs"></i>
+								Available</span>
+							} @else if (store.subDomainAvailable() === false) {
+							<span class="taken"><i class="pi pi-times-circle text-xs"></i> Already
+								taken</span>
+							}
+						</div>
+						@if (form.controls.subDomain.touched && form.controls.subDomain.invalid) {
+						<span class="field-error">Only lowercase letters, numbers and hyphens
+							allowed.</span>
+						}
+					</div>
+
+					<!-- About -->
+					<div class="field">
+						<label for="about" class="field-label">About</label>
+						<textarea
+							pTextarea
+							formControlName="about"
+							rows="4"
+							placeholder="Describe your organization..."
+							class="w-full"
+							[autoResize]="true">
+						</textarea>
+						@if (form.controls.about.touched && form.controls.about.invalid) {
+						<span class="field-error">About is required.</span>
+						}
+					</div>
+
+					<!-- Service Description -->
+					<div class="field">
+						<label for="serviceDescription" class="field-label">Service
+							Description</label>
+						<textarea
+							pTextarea
+							formControlName="serviceDescription"
+							rows="3"
+							placeholder="Describe your services..."
+							class="w-full"
+							[autoResize]="true">
+						</textarea>
+						@if (form.controls.serviceDescription.touched &&
+						form.controls.serviceDescription.invalid) {
+						<span class="field-error">Service description is required.</span>
+						}
+					</div>
+
+					<!-- Services Provided -->
+					<div class="field">
+						<label for="servicesProvided" class="field-label">Services
+							Provided</label>
+						<p-multiselect
+							formControlName="servicesProvided"
+							[options]="serviceTypeOptions()"
+							optionLabel="label"
+							optionValue="value"
+							display="chip"
+							placeholder="Select service types"
+							class="w-full" />
+
+						@if (form.controls.servicesProvided.touched &&
+						form.controls.servicesProvided.invalid) {
+						<span class="field-error">At least one service type must be
+							selected.</span>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
+}
