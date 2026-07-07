@@ -1,0 +1,8 @@
+:host {
+	display: block;
+	height: 100%;
+}
+
+:host ::ng-deep .disconnect-dialog {
+	width: 400px;
+}

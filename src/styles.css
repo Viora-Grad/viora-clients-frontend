@@ -18,3 +18,8 @@ body {
 	font-family: 'Inter Var', system-ui, sans-serif;
 	scroll-behavior: smooth;
 }
+
+.image-dialog {
+	width: 600px;
+	max-width: 90vw;
+}

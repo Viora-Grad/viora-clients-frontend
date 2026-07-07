@@ -1,0 +1,194 @@
+<div class="flex flex-col h-full">
+	<!-- Header -->
+	<div class="flex items-center gap-4 bg-white px-6 py-4 shadow-sm shrink-0">
+		<button
+			type="button"
+			class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+			(click)="back.emit()"
+			aria-label="Go back"
+		>
+			<i class="pi pi-arrow-left"></i>
+		</button>
+		<h1 class="text-xl font-bold text-gray-900 flex-1">
+			{{ chat()?.title ?? 'Untitled Chat' }}
+		</h1>
+		<span
+			class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold"
+			[class.bg-yellow-100]="chat()?.status === 'Draft'"
+			[class.text-yellow-700]="chat()?.status === 'Draft'"
+			[class.bg-green-100]="chat()?.status === 'Published'"
+			[class.text-green-700]="chat()?.status === 'Published'"
+			[class.bg-gray-100]="chat()?.status === 'Archived'"
+			[class.text-gray-500]="chat()?.status === 'Archived'"
+		>
+			{{ chat()?.status }}
+		</span>
+	</div>
+
+	<!-- Content -->
+	<div class="flex-1 overflow-y-auto p-6">
+		@if (!isConnected()) {
+			<div
+				class="mb-4 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"
+			>
+				<i class="pi pi-exclamation-triangle text-amber-500"></i>
+				<p class="text-sm text-amber-700">Connect to your Meta account to continue chatting.</p>
+			</div>
+		}
+
+		<div class="flex flex-col gap-4">
+			@for (message of messages(); track message.id) {
+				<div class="flex flex-col gap-2">
+					<div
+						class="flex"
+						[class.justify-end]="message.role === 'User'"
+						[class.justify-start]="message.role !== 'User'"
+					>
+						<div
+							class="max-w-[75%] rounded-2xl px-4 py-3"
+							[class.bg-primary]="message.role === 'User'"
+							[class.text-white]="message.role === 'User'"
+							[class.rounded-br-md]="message.role === 'User'"
+							[class.bg-white]="message.role !== 'User'"
+							[class.border]="message.role !== 'User'"
+							[class.border-gray-200]="message.role !== 'User'"
+							[class.shadow-sm]="message.role !== 'User'"
+							[class.text-gray-900]="message.role !== 'User'"
+							[class.rounded-bl-md]="message.role !== 'User'"
+						>
+							<p class="text-sm whitespace-pre-wrap">{{ message.content }}</p>
+							<p
+								class="mt-1 text-xs"
+								[class.text-white/70]="message.role === 'User'"
+								[class.text-gray-400]="message.role !== 'User'"
+							>
+								{{ message.createdAtUtc | date: 'shortTime' }}
+							</p>
+						</div>
+					</div>
+					@if (chatImage() && message.id === lastAssistantId()) {
+						<div class="flex justify-start">
+							<button
+								type="button"
+								class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors"
+								(click)="showImageDialog.set(true)"
+							>
+								<i class="pi pi-image"></i>
+								Show Attachment
+							</button>
+						</div>
+					}
+				</div>
+			}
+
+			<!-- Typing Bubble -->
+			@if (isPolling()) {
+				<div class="flex justify-start">
+					<div
+						class="bg-white border border-gray-200 shadow-sm rounded-2xl rounded-bl-md px-4 py-3"
+					>
+						<div class="flex items-center gap-1">
+							<span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
+							<span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
+							<span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+
+	<!-- Footer: read-only post preview OR message input -->
+	@if (isReadOnly()) {
+		<div class="border-t border-gray-200 bg-white px-6 py-4 shrink-0">
+			<p-button
+				label="Show Post"
+				icon="pi pi-eye"
+				styleClass="w-full !bg-primary !border-primary hover:!bg-primary-700"
+				(click)="openPost()"
+			/>
+		</div>
+	} @else if (isConnected()) {
+		<div class="border-t border-gray-200 bg-white px-6 py-4 shrink-0">
+			<div class="flex items-center gap-3">
+				<input
+					type="text"
+					placeholder="Type a message..."
+					class="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+					[ngModel]="messageInput()"
+					(ngModelChange)="messageInput.set($event)"
+					(keydown.enter)="onSend()"
+				/>
+				<p-button
+					icon="pi pi-send"
+					[rounded]="true"
+					[disabled]="!messageInput().trim() || isPolling()"
+					styleClass="!bg-primary !border-primary hover:!bg-primary-700"
+					(click)="onSend()"
+				/>
+			</div>
+		</div>
+	}
+</div>
+
+<!-- Image Dialog -->
+<p-dialog
+	[modal]="true"
+	[(visible)]="showImageDialog"
+	styleClass="image-dialog"
+	[header]="chatImage()?.fileName ?? 'Attachment'"
+>
+	<div class="flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden p-4">
+		@if (imageDataUrl(); as dataUrl) {
+			<img
+				[src]="dataUrl"
+				[alt]="chatImage()?.fileName ?? ''"
+				class="max-w-full max-h-96 object-contain"
+			/>
+		}
+	</div>
+</p-dialog>
+
+<!-- Post Preview Dialog -->
+<p-dialog
+	header="Post Preview"
+	[modal]="true"
+	[(visible)]="showPostDialog"
+	styleClass="post-dialog"
+>
+	<div class="flex flex-col gap-4">
+		<!-- Content text -->
+		@if (postContent()) {
+			<p class="text-sm whitespace-pre-wrap text-gray-800">{{ postContent() }}</p>
+		} @else {
+			<p class="text-sm text-gray-400 italic">No content available.</p>
+		}
+
+		<!-- Image -->
+		@if (imageDataUrl(); as dataUrl) {
+			<div class="flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden p-3">
+				<img [src]="dataUrl" alt="Post attachment" class="max-w-full max-h-80 object-contain" />
+			</div>
+		}
+
+		<!-- Publish error -->
+		@if (publishError()) {
+			<div class="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+				<i class="pi pi-times-circle text-red-500"></i>
+				<p class="text-sm text-red-700">{{ publishError() }}</p>
+			</div>
+		}
+
+		<!-- Actions -->
+		<div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+			<p-button label="Close" styleClass="p-button-text" (click)="showPostDialog.set(false)" />
+			<p-button
+				[label]="isPublished() ? 'Published' : 'Publish'"
+				icon="pi pi-send"
+				[loading]="isPublishing()"
+				[disabled]="isPublished() || isPublishing()"
+				(click)="onPublish()"
+			/>
+		</div>
+	</div>
+</p-dialog>

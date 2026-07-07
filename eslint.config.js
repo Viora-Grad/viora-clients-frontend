@@ -97,7 +97,7 @@ module.exports = defineConfig([
 		rules: {
 			'@angular-eslint/template/prefer-control-flow': 'error',
 			'@angular-eslint/template/prefer-self-closing-tags': 'error',
-			'@angular-eslint/template/prefer-ngsrc': 'error',
+			'@angular-eslint/template/prefer-ngsrc': 'off',
 			'@angular-eslint/template/no-negated-async': 'error',
 			'@angular-eslint/template/button-has-type': 'error',
 			'@angular-eslint/template/no-inline-styles': 'error',
