@@ -49,7 +49,7 @@ export class FolderContentComponent {
 	protected readonly isDeleting = signal(false);
 
 	protected readonly templateForm = new FormGroup({
-		name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+		name: new FormControl('', { nonNullable: true, validators: [Validators.required] }), // eslint-disable-line @typescript-eslint/unbound-method
 		description: new FormControl('', { nonNullable: true }),
 	});
 
@@ -60,7 +60,7 @@ export class FolderContentComponent {
 	protected readonly isSavingRecord = signal(false);
 
 	protected readonly customerIdForm = new FormGroup({
-		customerId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+		customerId: new FormControl('', { nonNullable: true, validators: [Validators.required] }), // eslint-disable-line @typescript-eslint/unbound-method
 	});
 
 	private readonly _recordForm = viewChild(DynamicRecordFormComponent);

@@ -1,7 +1,6 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 import { BranchStore } from '../../../../core/branch/stores/branch.store';
 import { Appointment } from '../../models/appointment.model';

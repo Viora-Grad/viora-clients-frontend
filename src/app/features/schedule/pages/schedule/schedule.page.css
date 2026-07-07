@@ -19,3 +19,28 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
 	background: #9ca3af;
 }
+
+.day-column {
+	min-width: 260px;
+	width: 260px;
+}
+
+:host ::ng-deep .schedule-dialog {
+	width: 400px;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .shift-dialog {
+	width: 450px;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .cancel-shift-dialog {
+	width: 450px;
+	max-width: 95vw;
+}
+
+:host ::ng-deep .delete-shift-dialog {
+	width: 400px;
+	max-width: 95vw;
+}

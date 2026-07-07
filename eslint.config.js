@@ -45,25 +45,30 @@ module.exports = defineConfig([
 			'no-var': 'error',
 			'prefer-const': 'warn',
 
-			'@typescript-eslint/naming-convention': [
-				'warn',
+		'@typescript-eslint/naming-convention': [
+			'warn',
 
-				{
-					selector: 'typeLike',
-					format: ['PascalCase'],
-				},
+			{
+				selector: 'typeLike',
+				format: ['PascalCase'],
+			},
 
-				{
-					selector: 'variableLike',
-					format: ['camelCase', 'UPPER_CASE'],
-				},
+			{
+				selector: 'variableLike',
+				format: ['camelCase', 'UPPER_CASE'],
+			},
 
-				{
-					selector: 'property',
-					format: ['camelCase'],
-					leadingUnderscore: 'allow',
-				},
-			],
+			{
+				selector: 'property',
+				format: ['camelCase'],
+				leadingUnderscore: 'allow',
+			},
+
+			{
+				selector: 'objectLiteralProperty',
+				format: null,
+			},
+		],
 
 			complexity: ['warn', 10],
 			'max-depth': ['warn', 4],

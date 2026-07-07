@@ -44,7 +44,7 @@ export class DynamicRecordFormComponent {
 			return null;
 		}
 		return this.orderedFields.map((field) => {
-			const raw = this.form.controls[field.name]?.value;
+			const raw: unknown = this.form.controls[field.name]?.value;
 			return { fieldName: field.name, value: this._serialize(field, raw) };
 		});
 	}
@@ -96,10 +96,10 @@ export class DynamicRecordFormComponent {
 		return validators;
 	}
 
-	private _serialize(field: TemplateVersionField, raw: unknown): unknown {
+	private _serialize(field: TemplateVersionField, raw: unknown): string | number | boolean | null {
 		if (field.type === FieldType.Date && raw instanceof Date) {
 			return raw.toISOString();
 		}
-		return raw;
+		return raw as string;
 	}
 }

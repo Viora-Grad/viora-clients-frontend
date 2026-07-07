@@ -56,9 +56,9 @@ export class TemplateFieldEditorComponent implements OnInit {
 	protected readonly fieldForm = new FormGroup({
 		name: new FormControl('', {
 			nonNullable: true,
-			validators: [Validators.required, Validators.pattern(FIELD_NAME_PATTERN)],
+			validators: [Validators.required, Validators.pattern(FIELD_NAME_PATTERN)], // eslint-disable-line @typescript-eslint/unbound-method
 		}),
-		label: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+		label: new FormControl('', { nonNullable: true, validators: [Validators.required] }), // eslint-disable-line @typescript-eslint/unbound-method
 		type: new FormControl<FieldType>(FieldType.Text, { nonNullable: true }),
 		required: new FormControl(false, { nonNullable: true }),
 		minLength: new FormControl<number | null>(null),

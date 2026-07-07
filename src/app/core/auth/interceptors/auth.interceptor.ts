@@ -38,7 +38,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 	}
 
 	const authReq = req.clone({
-		// eslint-disable-next-line @typescript-eslint/naming-convention
+		 
 		setHeaders: { Authorization: `Bearer ${accessToken}` },
 	});
 
@@ -58,7 +58,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 							return throwError(() => error);
 						}
 						const retryReq = req.clone({
-							// eslint-disable-next-line @typescript-eslint/naming-convention
+							 
 							setHeaders: { Authorization: `Bearer ${newToken}` },
 						});
 						return next(retryReq);
@@ -78,7 +78,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 					if (success) {
 						const newToken = authStore.accessToken();
 						const retryReq = req.clone({
-							// eslint-disable-next-line @typescript-eslint/naming-convention
+							 
 							setHeaders: { Authorization: `Bearer ${newToken}` },
 						});
 						return next(retryReq);

@@ -43,10 +43,10 @@ export class WalletPage implements OnInit {
 	protected readonly isCheckingOut = signal(false);
 
 	protected readonly checkoutForm = this._formBuilder.group({
-		amount: ['', [Validators.required, Validators.min(0.01)]],
-		recipientName: ['', Validators.required],
-		recipientBank: ['', Validators.required],
-		recipientNumber: ['', Validators.required],
+		amount: ['', [Validators.required, Validators.min(0.01)]], // eslint-disable-line @typescript-eslint/unbound-method
+		recipientName: ['', Validators.required], // eslint-disable-line @typescript-eslint/unbound-method
+		recipientBank: ['', Validators.required], // eslint-disable-line @typescript-eslint/unbound-method
+		recipientNumber: ['', Validators.required], // eslint-disable-line @typescript-eslint/unbound-method
 	});
 
 	protected readonly formattedBalance = computed(() => {

@@ -7,3 +7,8 @@
 	width: 44rem;
 	max-width: 95vw;
 }
+
+:host ::ng-deep .scanner-dialog {
+	width: 450px;
+	max-width: 95vw;
+}

@@ -32,7 +32,7 @@ export class ArchivesPage implements OnInit {
 	protected readonly isDeleting = signal(false);
 
 	protected readonly form = new FormGroup({
-		name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+		name: new FormControl('', { nonNullable: true, validators: [Validators.required] }), // eslint-disable-line @typescript-eslint/unbound-method
 		description: new FormControl('', { nonNullable: true }),
 		enableVersioning: new FormControl(true, { nonNullable: true }),
 		enableAttachments: new FormControl(true, { nonNullable: true }),

@@ -146,6 +146,12 @@ export class RecordListComponent {
 	protected summary(record: ArchiveRecord): string {
 		const first = record.values[0];
 		if (!first) return `Record ${record.id.slice(0, 8)}`;
-		return `${first.fieldName}: ${String(first.value ?? '—')}`;
+		const displayValue: unknown = first.value ?? '—';
+		if (displayValue === null || displayValue === undefined) return `${first.fieldName}: —`;
+		if (typeof displayValue === 'object') return `${first.fieldName}: ${JSON.stringify(displayValue)}`;
+		if (typeof displayValue === 'string') return `${first.fieldName}: ${displayValue}`;
+		if (typeof displayValue === 'number') return `${first.fieldName}: ${displayValue}`;
+		if (typeof displayValue === 'boolean') return `${first.fieldName}: ${displayValue ? 'Yes' : 'No'}`;
+		return `${first.fieldName}: —`;
 	}
 }

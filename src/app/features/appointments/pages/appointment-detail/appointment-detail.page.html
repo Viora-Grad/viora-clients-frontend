@@ -569,7 +569,7 @@
 	[modal]="true"
 	[draggable]="false"
 	[resizable]="false"
-	[style]="{ width: '450px' }"
+	styleClass="scanner-dialog"
 	(onShow)="onDialogVisibleChange(true)"
 	(onHide)="onDialogVisibleChange(false)"
 >
@@ -633,8 +633,9 @@
 
 		<!-- Archive selection -->
 		<div class="flex flex-col gap-1.5">
-			<label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Archive</label>
+			<label for="archive-select" class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Archive</label>
 			<p-select
+				id="archive-select"
 				[options]="archiveOptions()"
 				optionLabel="label"
 				optionValue="value"
@@ -654,9 +655,10 @@
 			} @else {
 				<!-- Folder tree -->
 				<div class="flex flex-col gap-1.5">
-					<label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Folder & Template</label>
+					<label for="archive-tree" class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Folder & Template</label>
 					<div class="border border-gray-200 rounded-xl max-h-[30vh] overflow-auto">
 						<p-tree
+							id="archive-tree"
 							[value]="archiveTreeNodes()"
 							selectionMode="single"
 							(onNodeSelect)="onArchiveTreeNodeSelect($event)"
@@ -668,7 +670,7 @@
 				<!-- Templates in selected folder -->
 				@if (templatesInFolder().length > 0 && !selectedTemplateForRecord()) {
 					<div class="flex flex-col gap-1.5">
-						<label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Templates in folder</label>
+						<span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Templates in folder</span>
 						<div class="flex flex-col gap-2">
 							@for (tpl of templatesInFolder(); track tpl.id) {
 								<button

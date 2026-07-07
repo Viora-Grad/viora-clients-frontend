@@ -19,13 +19,13 @@ import { StaffDetail } from '../../../../core/staff/models/staff-detail.model';
 import { Role } from '../../../../core/role/models/role.model';
 import { TenantStore } from '../../../../core/tenant/stores/tenant.store';
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 const STATUS_MAP: Record<string, { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' }> = {
 	Active: { label: 'Active', severity: 'success' },
 	Pending: { label: 'Pending', severity: 'warn' },
 	Suspended: { label: 'Suspended', severity: 'danger' },
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 const GENDER_OPTIONS = [
 	{ label: 'Male', value: 'Male' },

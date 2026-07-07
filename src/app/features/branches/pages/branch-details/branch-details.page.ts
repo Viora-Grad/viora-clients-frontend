@@ -12,7 +12,7 @@ import * as L from 'leaflet';
 import { BranchApi } from '../../../../core/branch/apis/branch.api';
 import { BranchDetail } from '../../../../core/branch/models/branch-detail.model';
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 const STATUS_LABELS: Record<number, string> = {
 	0: 'Active',
 	1: 'Hidden',
@@ -26,7 +26,7 @@ const STATUS_CLASSES: Record<number, string> = {
 	2: 'bg-orange-100 text-orange-700',
 	3: 'bg-red-100 text-red-700',
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 const PHONE_REGEX = /^\+\d[\d\s\-()]{6,19}$/;
 

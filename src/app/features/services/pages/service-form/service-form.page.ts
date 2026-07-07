@@ -59,19 +59,19 @@ export class ServiceFormPage implements OnInit {
 	protected readonly isAddFieldVisible = signal(false);
 	protected readonly hasForm = signal(false);
 
-	protected readonly formName = new FormControl('', { validators: Validators.required });
+	protected readonly formName = new FormControl('', { validators: Validators.required }); // eslint-disable-line @typescript-eslint/unbound-method
 
 	protected readonly newFieldForm = new FormGroup({
-		name: new FormControl('', { validators: [Validators.required, Validators.pattern(FIELD_NAME_PATTERN)] }),
-		type: new FormControl<FormField['type']>('text', { validators: Validators.required }),
-		label: new FormControl('', { validators: Validators.required }),
+		name: new FormControl('', { validators: [Validators.required, Validators.pattern(FIELD_NAME_PATTERN)] }), // eslint-disable-line @typescript-eslint/unbound-method
+		type: new FormControl<FormField['type']>('text', { validators: Validators.required }), // eslint-disable-line @typescript-eslint/unbound-method
+		label: new FormControl('', { validators: Validators.required }), // eslint-disable-line @typescript-eslint/unbound-method
 		required: new FormControl(false),
 	});
 
 	protected readonly editFieldForm = new FormGroup({
-		name: new FormControl('', { validators: [Validators.required, Validators.pattern(FIELD_NAME_PATTERN)] }),
-		type: new FormControl<FormField['type']>('text', { validators: Validators.required }),
-		label: new FormControl('', { validators: Validators.required }),
+		name: new FormControl('', { validators: [Validators.required, Validators.pattern(FIELD_NAME_PATTERN)] }), // eslint-disable-line @typescript-eslint/unbound-method
+		type: new FormControl<FormField['type']>('text', { validators: Validators.required }), // eslint-disable-line @typescript-eslint/unbound-method
+		label: new FormControl('', { validators: Validators.required }), // eslint-disable-line @typescript-eslint/unbound-method
 		required: new FormControl(false),
 	});
 

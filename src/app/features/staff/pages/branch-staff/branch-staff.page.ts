@@ -16,13 +16,13 @@ import { StaffDetail, StaffDetailService } from '../../../../core/staff/models/s
 import { Service } from '../../../services/models/services.model';
 import { ServicesApi } from '../../../services/apis/services.api';
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 const STATUS_MAP: Record<string, { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' }> = {
 	Active: { label: 'Active', severity: 'success' },
 	Pending: { label: 'Pending', severity: 'warn' },
 	Suspended: { label: 'Suspended', severity: 'danger' },
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 @Component({
 	changeDetection: ChangeDetectionStrategy.OnPush,

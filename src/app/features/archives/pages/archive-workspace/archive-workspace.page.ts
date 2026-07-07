@@ -67,7 +67,7 @@ export class ArchiveWorkspacePage implements OnInit, OnDestroy {
 	protected readonly isDeletingFolder = signal(false);
 
 	protected readonly folderForm = new FormGroup({
-		name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+		name: new FormControl('', { nonNullable: true, validators: [Validators.required] }), // eslint-disable-line @typescript-eslint/unbound-method
 		description: new FormControl('', { nonNullable: true }),
 		order: new FormControl<number>(0, { nonNullable: true }),
 	});

@@ -210,12 +210,7 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 		if (!this._appointmentId) return;
 		this.isUpdating.set(true);
 		try {
-			await new Promise<void>((resolve, reject) => {
-				this._appointmentApi.markNoShow(this._appointmentId).subscribe({
-					next: () => resolve(),
-					error: (err) => reject(err),
-				});
-			});
+			await firstValueFrom(this._appointmentApi.markNoShow(this._appointmentId));
 			await this._loadAppointment(this._appointmentId);
 		} catch {
 			this.error.set('Failed to mark as no-show');
@@ -228,12 +223,7 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 		if (!this._appointmentId) return;
 		this.isUpdating.set(true);
 		try {
-			await new Promise<void>((resolve, reject) => {
-				this._appointmentApi.completeAppointment(this._appointmentId).subscribe({
-					next: () => resolve(),
-					error: (err) => reject(err),
-				});
-			});
+			await firstValueFrom(this._appointmentApi.completeAppointment(this._appointmentId));
 			await this._loadAppointment(this._appointmentId);
 		} catch {
 			this.error.set('Failed to complete appointment');
@@ -365,12 +355,7 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 		if (!this._appointmentId) return;
 		this.isUpdating.set(true);
 		try {
-			await new Promise<void>((resolve, reject) => {
-				this._appointmentApi.checkInAppointment(this._appointmentId, qrCode).subscribe({
-					next: () => resolve(),
-					error: (err) => reject(err),
-				});
-			});
+			await firstValueFrom(this._appointmentApi.checkInAppointment(this._appointmentId, qrCode));
 			await this._loadAppointment(this._appointmentId);
 		} catch {
 			this.error.set('Check-in failed. Invalid QR code.');
@@ -381,12 +366,7 @@ export class AppointmentDetailPage implements OnInit, OnDestroy {
 
 	private async _loadAppointment(id: string): Promise<void> {
 		try {
-			const response = await new Promise<AppointmentDetail>((resolve, reject) => {
-				this._appointmentApi.getAppointmentById(id).subscribe({
-					next: (data) => resolve(data as unknown as AppointmentDetail),
-					error: (err) => reject(err),
-				});
-			});
+			const response = await firstValueFrom(this._appointmentApi.getAppointmentById(id)) as unknown as AppointmentDetail;
 			this.appointment.set(response);
 
 			const firstName = response.customerFirstName ?? '';

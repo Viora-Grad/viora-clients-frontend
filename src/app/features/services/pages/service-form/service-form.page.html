@@ -98,7 +98,10 @@
 								class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 cursor-pointer hover:border-primary transition-colors"
 								[class.border-primary]="selectedIndex() === i"
 								[class.bg-primary-50]="selectedIndex() === i"
+								role="button"
+								tabindex="0"
 								(click)="selectField(i)"
+								(keyup.enter)="selectField(i)"
 							>
 								<div cdkDragHandle class="cursor-grab text-gray-400 hover:text-gray-600">
 									<i class="pi pi-bars"></i>
@@ -161,7 +164,7 @@
 							/>
 						</div>
 						<div class="space-y-1.5">
-							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">&nbsp;</label>
+							<span class="block text-[11px] font-extrabold text-gray-600 tracking-wider">&nbsp;</span>
 							<div class="flex items-center gap-2 h-[38px]">
 								<p-checkbox
 									[formControl]="editFieldRequired"
@@ -176,45 +179,45 @@
 					<!-- Options for Select -->
 					@if (selectedFieldType === 'select') {
 						<div class="mt-4 space-y-2">
-							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
-								OPTIONS
-							</label>
-							@for (optCtrl of optionsArray.controls; track $index; let i = $index) {
-								<div class="flex items-center gap-2">
-									<input
-										pInputText
-										type="text"
-										class="flex-1"
-										placeholder="Option value"
-										[formControl]="optCtrl"
-									/>
-									<p-button
-										icon="pi pi-times"
-										[rounded]="true"
-										[text]="true"
-										size="small"
-										styleClass="!text-red-500"
-										(click)="removeOption(i)"
-									/>
-								</div>
-							}
-							<p-button
-								label="Add Option"
-								icon="pi pi-plus"
-								[text]="true"
-								size="small"
-								styleClass="!text-primary"
-								(click)="addOption()"
-							/>
-						</div>
-					}
+						<span class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+							OPTIONS
+						</span>
+						@for (optCtrl of optionsArray.controls; track $index; let i = $index) {
+							<div class="flex items-center gap-2">
+								<input
+									pInputText
+									type="text"
+									class="flex-1"
+									placeholder="Option value"
+									[formControl]="optCtrl"
+								/>
+								<p-button
+									icon="pi pi-times"
+									[rounded]="true"
+									[text]="true"
+									size="small"
+									styleClass="!text-red-500"
+									(click)="removeOption(i)"
+								/>
+							</div>
+						}
+						<p-button
+							label="Add Option"
+							icon="pi pi-plus"
+							[text]="true"
+							size="small"
+							styleClass="!text-primary"
+							(click)="addOption()"
+						/>
+					</div>
+				}
 
-					<!-- Accept for File -->
-					@if (selectedFieldType === 'file') {
-						<div class="mt-4 space-y-2">
-							<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
-								ACCEPTED FILE TYPES
-							</label>
+				<!-- Accept for File -->
+				@if (selectedFieldType === 'file') {
+					<div class="mt-4 space-y-2">
+						<span class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+							ACCEPTED FILE TYPES
+						</span>
 							@for (accCtrl of acceptArray.controls; track $index; let i = $index) {
 								<div class="flex items-center gap-2">
 									<input
@@ -324,45 +327,45 @@
 		<!-- Options for Select -->
 		@if (newFieldType === 'select') {
 			<div class="space-y-2">
-				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
-					OPTIONS
-				</label>
-				@for (optCtrl of optionsArray.controls; track $index; let i = $index) {
-					<div class="flex items-center gap-2">
-						<input
-							pInputText
-							type="text"
-							class="flex-1"
-							placeholder="Option value"
-							[formControl]="optCtrl"
-						/>
-						<p-button
-							icon="pi pi-times"
-							[rounded]="true"
-							[text]="true"
-							size="small"
-							styleClass="!text-red-500"
-							(click)="removeOption(i)"
-						/>
-					</div>
-				}
-				<p-button
-					label="Add Option"
-					icon="pi pi-plus"
-					[text]="true"
-					size="small"
-					styleClass="!text-primary"
-					(click)="addOption()"
-				/>
-			</div>
-		}
+			<span class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+				OPTIONS
+			</span>
+			@for (optCtrl of optionsArray.controls; track $index; let i = $index) {
+				<div class="flex items-center gap-2">
+					<input
+						pInputText
+						type="text"
+						class="flex-1"
+						placeholder="Option value"
+						[formControl]="optCtrl"
+					/>
+					<p-button
+						icon="pi pi-times"
+						[rounded]="true"
+						[text]="true"
+						size="small"
+						styleClass="!text-red-500"
+						(click)="removeOption(i)"
+					/>
+				</div>
+			}
+			<p-button
+				label="Add Option"
+				icon="pi pi-plus"
+				[text]="true"
+				size="small"
+				styleClass="!text-primary"
+				(click)="addOption()"
+			/>
+		</div>
+	}
 
-		<!-- Accept for File -->
-		@if (newFieldType === 'file') {
-			<div class="space-y-2">
-				<label class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
-					ACCEPTED FILE TYPES
-				</label>
+	<!-- Accept for File -->
+	@if (newFieldType === 'file') {
+		<div class="space-y-2">
+			<span class="block text-[11px] font-extrabold text-gray-600 tracking-wider">
+				ACCEPTED FILE TYPES
+			</span>
 				@for (accCtrl of acceptArray.controls; track $index; let i = $index) {
 					<div class="flex items-center gap-2">
 						<input

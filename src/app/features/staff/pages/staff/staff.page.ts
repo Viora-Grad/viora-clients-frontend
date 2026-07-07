@@ -7,13 +7,13 @@ import { Tag } from 'primeng/tag';
 import { TenantStore } from '../../../../core/tenant/stores/tenant.store';
 import { StaffStore } from '../../../../core/staff/stores/staff.store';
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 const STATUS_MAP: Record<string, { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' }> = {
 	Active: { label: 'Active', severity: 'success' },
 	Pending: { label: 'Pending', severity: 'warn' },
 	Suspended: { label: 'Suspended', severity: 'danger' },
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 @Component({
 	changeDetection: ChangeDetectionStrategy.OnPush,

@@ -24,7 +24,7 @@ export class ShellComponent {
 		{ label: 'Prescriptions', icon: 'pi pi-file-edit', route: '/prescriptions' },
 		{ label: 'Archives', icon: 'pi pi-inbox', route: '/archives' },
 		{ label: 'ViVi Marketing', icon: 'pi pi-microchip-ai', route: '/vivi' },
-		{ label: 'Billing', icon: 'pi pi-dollar', route: '/billing' },
+		// { label: 'Billing', icon: 'pi pi-dollar', route: '/billing' },
 	];
 
 	private readonly _branchNavItems: NavItem[] = [

@@ -31,11 +31,11 @@ export class StaffApi {
 	public getStaff(organizationId: string, page = 1, pageSize = 10): Observable<StaffListResponse> {
 		return this._http.get<StaffListResponse>(`${environment.apiBaseUrl}/Staffs`, {
 			params: {
-				// eslint-disable-next-line @typescript-eslint/naming-convention
+				 
 				OrganizationId: organizationId,
-				// eslint-disable-next-line @typescript-eslint/naming-convention
+				 
 				Page: page.toString(),
-				// eslint-disable-next-line @typescript-eslint/naming-convention
+				 
 				PageSize: pageSize.toString(),
 			},
 		});
@@ -47,7 +47,7 @@ export class StaffApi {
 		pageSize = 10,
 	): Observable<StaffListResponse> {
 		return this._http.get<StaffListResponse>(`${environment.apiBaseUrl}/Staffs`, {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
+			 
 			params: { BranchIds: branchId, Page: page.toString(), PageSize: pageSize.toString() },
 		});
 	}

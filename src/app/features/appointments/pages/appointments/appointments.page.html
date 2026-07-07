@@ -67,8 +67,9 @@
 				<div class="bg-white rounded-2xl shadow-sm p-4 mb-4">
 					<div class="flex flex-wrap items-end gap-3">
 						<div class="flex flex-col gap-1.5">
-							<label class="text-xs font-semibold text-gray-600">Service</label>
+							<label for="filter-service" class="text-xs font-semibold text-gray-600">Service</label>
 							<p-select
+								id="filter-service"
 								[options]="serviceOptions()"
 								[(ngModel)]="selectedServiceId"
 								optionLabel="label"
@@ -81,8 +82,9 @@
 						</div>
 
 						<div class="flex flex-col gap-1.5">
-							<label class="text-xs font-semibold text-gray-600">Staff</label>
+							<label for="filter-staff" class="text-xs font-semibold text-gray-600">Staff</label>
 							<p-select
+								id="filter-staff"
 								[options]="staffOptions()"
 								[(ngModel)]="selectedStaffId"
 								optionLabel="label"
@@ -95,8 +97,9 @@
 						</div>
 
 						<div class="flex flex-col gap-1.5">
-							<label class="text-xs font-semibold text-gray-600">Status</label>
+							<label for="filter-status" class="text-xs font-semibold text-gray-600">Status</label>
 							<p-select
+								id="filter-status"
 								[options]="statusOptions"
 								[(ngModel)]="selectedStatus"
 								optionLabel="label"
@@ -109,8 +112,9 @@
 						</div>
 
 						<div class="flex flex-col gap-1.5">
-							<label class="text-xs font-semibold text-gray-600">From Date</label>
+							<label for="filter-from-date" class="text-xs font-semibold text-gray-600">From Date</label>
 							<p-datePicker
+								id="filter-from-date"
 								[(ngModel)]="fromDate"
 								dateFormat="yy-mm-dd"
 								placeholder="From"
@@ -121,8 +125,9 @@
 						</div>
 
 						<div class="flex flex-col gap-1.5">
-							<label class="text-xs font-semibold text-gray-600">To Date</label>
+							<label for="filter-to-date" class="text-xs font-semibold text-gray-600">To Date</label>
 							<p-datePicker
+								id="filter-to-date"
 								[(ngModel)]="toDate"
 								dateFormat="yy-mm-dd"
 								placeholder="To"

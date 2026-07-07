@@ -13,7 +13,7 @@ export class RecordViewComponent {
 	public readonly record = input.required<ArchiveRecord>();
 
 	protected displayValue(value: RecordFieldValue): string {
-		const raw = value.value;
+		const raw: unknown = value.value;
 		if (raw === null || raw === undefined || raw === '') return '—';
 		if (value.fieldType === FieldType.Boolean) return raw ? 'Yes' : 'No';
 		if (value.fieldType === FieldType.Date && typeof raw === 'string') {
@@ -26,7 +26,9 @@ export class RecordViewComponent {
 				});
 			}
 		}
-		return String(raw);
+		if (typeof raw === 'object') return JSON.stringify(raw);
+		if (typeof raw === 'string' || typeof raw === 'number' || typeof raw === 'boolean') return String(raw);
+		return '—';
 	}
 
 	protected formatSize(bytes: number): string {

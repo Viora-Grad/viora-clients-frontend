@@ -2,7 +2,6 @@ import {
 	ChangeDetectionStrategy,
 	Component,
 	ElementRef,
-	inject,
 	input,
 	OnChanges,
 	viewChild,
@@ -15,7 +14,7 @@ import {
 	styles: `:host { display: block; width: 100%; }`,
 })
 export class ShadowHtmlComponent implements OnChanges {
-	readonly html = input.required<string>();
+	public readonly html = input.required<string>();
 
 	private readonly _host = viewChild<ElementRef<HTMLDivElement>>('host');
 	private _shadowRoot: ShadowRoot | null = null;
@@ -24,9 +23,7 @@ export class ShadowHtmlComponent implements OnChanges {
 		const hostEl = this._host()?.nativeElement;
 		if (!hostEl) return;
 
-		if (!this._shadowRoot) {
-			this._shadowRoot = hostEl.attachShadow({ mode: 'open' });
-		}
+		this._shadowRoot ??= hostEl.attachShadow({ mode: 'open' });
 
 		const raw = this.html();
 		const styles = this._extractStyles(raw);
@@ -47,14 +44,14 @@ export class ShadowHtmlComponent implements OnChanges {
 		if (!matches) return '';
 		return matches
 			.map((m) => {
-				const inner = m.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
+				const inner = /<style[^>]*>([\s\S]*?)<\/style>/i.exec(m);
 				return inner ? inner[1] : '';
 			})
 			.join('\n');
 	}
 
 	private _extractBody(html: string): string {
-		const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+		const bodyMatch = /<body[^>]*>([\s\S]*)<\/body>/i.exec(html);
 		return bodyMatch ? bodyMatch[1] : html;
 	}
 }

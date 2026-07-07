@@ -23,7 +23,10 @@
 					class="bg-white rounded-2xl shadow-sm p-5 transition-all cursor-pointer hover:shadow-md hover:border-primary/30 border border-transparent"
 					[class.cursor-pointer]="!!currentAppointment()"
 					[class.pointer-events-none]="!currentAppointment()"
+					role="button"
+					tabindex="0"
 					(click)="currentAppointment() && navigateToAppointment(currentAppointment()!.id)"
+					(keyup.enter)="currentAppointment() && navigateToAppointment(currentAppointment()!.id)"
 				>
 					<div class="flex items-center gap-2 mb-3">
 						<div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>

@@ -13,13 +13,13 @@ import { BranchStore } from '../../../../core/branch/stores/branch.store';
 import { Service } from '../../models/services.model';
 import { ServicesService } from '../../services/services.service';
 
-/* eslint-disable @typescript-eslint/naming-convention */
+ 
 const STATUS_MAP: Record<string, { label: string; severity: 'success' | 'warn' | 'danger' | 'secondary' }> = {
 	Active: { label: 'Active', severity: 'success' },
 	Hidden: { label: 'Hidden', severity: 'warn' },
 	Disabled: { label: 'Disabled', severity: 'danger' },
 };
-/* eslint-enable @typescript-eslint/naming-convention */
+ 
 
 function requiredValidator(): ValidatorFn {
 	return (control: AbstractControl): ValidationErrors | null => Validators.required(control);

@@ -68,7 +68,7 @@ export class FacebookService {
 
 	public getPages(accessToken: string): Promise<FacebookPage[]> {
 		return new Promise((resolve, reject) => {
-			/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/naming-convention, @typescript-eslint/no-unsafe-argument */
+			/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 			(window as any).FB.api(
 				'/me/accounts',
 				'GET',
@@ -81,7 +81,7 @@ export class FacebookService {
 					}
 				},
 			);
-			/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/naming-convention, @typescript-eslint/no-unsafe-argument */
+			/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 		});
 	}
 
